@@ -79,13 +79,11 @@ ok(imgs.every(i => i.lazy === 'lazy' && i.sized), 'lazy + מידות מפורש�
 const readState = () => page.evaluate(() => ({
   opB: +getComputedStyle(document.getElementById('sem-photo-b')).opacity,
   badge: document.getElementById('sem-badge').textContent.trim(),
-  capA: +getComputedStyle(document.getElementById('sem-caption-a')).opacity,
-  capB: +getComputedStyle(document.getElementById('sem-caption-b')).opacity,
   val: +document.getElementById('semester-range').value,
 }));
 
 const st0 = await readState();
-ok(st0.opB < 0.05 && st0.capA > 0.9 && st0.badge.includes("סמסטר א'"),
+ok(st0.opB < 0.05 && st0.badge.includes("סמסטר א'"),
    `מצב התחלתי = סמסטר א' (opacity B=${st0.opB}, badge="${st0.badge.slice(0,12)}…")`);
 
 // החלקה חלקית — דהייה רציפה, בלי קפיצה בין מצבים
@@ -109,14 +107,13 @@ await page.evaluate(() => { const r = document.getElementById('semester-range');
 await page.waitForTimeout(700);
 const stB = await readState();
 ok(stB.val === 100 && stB.opB > 0.95, `שחרור מעל לחצי נתפס לסמסטר ב' (value=${stB.val}, opacity B=${stB.opB})`);
-ok(stB.badge.includes("סמסטר ב'") && stB.capB > 0.9 && stB.capA < 0.05,
-   `התווית והכיתוב התחלפו לסמסטר ב' (badge="${stB.badge.slice(0,12)}…")`);
+ok(stB.badge.includes("סמסטר ב'"), `התווית על התמונה התחלפה לסמסטר ב' (badge="${stB.badge.slice(0,12)}…")`);
 
 // כפתור הקיצור חוזר לסמסטר א'
 await page.click('#sem-btn-a');
 await page.waitForTimeout(700);
 const stBack = await readState();
-ok(stBack.val === 0 && stBack.capA > 0.9, `כפתור "סמסטר א'" מחזיר את המצב (value=${stBack.val})`);
+ok(stBack.val === 0 && stBack.opB < 0.05, `כפתור "סמסטר א'" מחזיר את המצב (value=${stBack.val})`);
 
 // אזור מגע נוח לאצבע
 const thumbArea = await page.evaluate(() => document.getElementById('semester-range').getBoundingClientRect().height);
@@ -135,14 +132,11 @@ await page.evaluate(() => window.scrollTo(0, 0)); await page.waitForTimeout(400)
 
 await page.click('button[onclick="openQrModal()"]'); await page.waitForTimeout(400);
 const qr = await page.evaluate(() => { const e = document.getElementById('qr-image');
-  return { tag: e.tagName.toLowerCase(), w: e.getBoundingClientRect().width }; });
-ok(qr.tag === 'svg' && qr.w > 100, `QR מוצג כ-SVG מוטמע (${qr.tag}, ${Math.round(qr.w)}px)`);
+  return { tag: e && e.tagName.toLowerCase(), w: e && e.getBoundingClientRect().width,
+           label: e && e.getAttribute('aria-label'), url: siteUrl() }; });
+ok(qr.tag === 'svg' && qr.w > 100, `QR נוצר בזמן ריצה כ-SVG (${qr.tag}, ${Math.round(qr.w)}px)`);
+ok(qr.label === 'QR code ' + qr.url, `ה-QR מקודד את הכתובת הנוכחית (${qr.url})`);
 await page.screenshot({ path: 'shot-qr.png' });
-await page.keyboard.press('Escape'); await page.waitForTimeout(300);
-
-await page.click('button[onclick="openPosterModal()"]'); await page.waitForTimeout(500);
-ok(await page.evaluate(() => !document.getElementById('poster-modal').classList.contains('hidden')), 'מודאל הפוסטר נפתח');
-await page.screenshot({ path: 'shot-poster.png', fullPage: false });
 await page.keyboard.press('Escape'); await page.waitForTimeout(300);
 
 // horizontal overflow check

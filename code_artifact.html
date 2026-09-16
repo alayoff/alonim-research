@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>הקשר בין אינהיביציה לשטף מתמטי | פרויקט מחקר - תוכנית אלונים</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Rubik:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Assistant', 'system-ui', 'sans-serif'],
+            display: ['Rubik', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              teal: '#0d9488',
+              mint: '#a7f3d0',
+              pink: '#f472b6',
+              rose: '#f43f5e',
+              sky: '#0284c7',
+              navy: '#0f172a',
+              lavender: '#8b5cf6'
+            }
+          },
+          animation: {
+            'float-slow': 'floatSlow 8s ease-in-out infinite alternate',
+            'pulse-subtle': 'pulseSubtle 2.5s ease-in-out infinite',
+          },
+          keyframes: {
+            floatSlow: {
+              '0%': { transform: 'translateY(0px) rotate(0deg)' },
+              '100%': { transform: 'translateY(-16px) rotate(2deg)' },
+            },
+            pulseSubtle: {
+              '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+              '50%': { opacity: '0.92', transform: 'scale(1.02)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.90);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, #0f766e 0%, #db2777 50%, #2563eb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .touch-pad {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    kbd {
+      box-shadow: 0 2px 0 rgba(0,0,0,0.15);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #poster-modal, #poster-modal * {
+        visibility: visible;
+      }
+      #poster-modal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        display: block !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-[#f0fdf4] via-[#fdf2f8] to-[#f0f9ff] text-slate-800 antialiased min-h-screen relative overflow-x-hidden selection:bg-pink-200 selection:text-pink-900">
+
+  <!-- Ambient Blobs -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-20 -right-20 w-96 h-96 bg-emerald-200/50 rounded-full blur-3xl animate-float-slow"></div>
+    <div class="absolute top-1/3 -left-32 w-[30rem] h-[30rem] bg-pink-200/45 rounded-full blur-3xl animate-float-slow" style="animation-delay: -3s;"></div>
+    <div class="absolute -bottom-24 right-1/4 w-[28rem] h-[28rem] bg-sky-200/50 rounded-full blur-3xl animate-float-slow" style="animation-delay: -6s;"></div>
+  </div>
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-3 z-40 max-w-7xl mx-auto px-3 sm:px-6">
+    <nav class="glass-panel rounded-2xl px-4 sm:px-5 py-3 shadow-lg shadow-teal-950/5 flex items-center justify-between transition-all">
+      
+      <!-- Right Side Actions (Hamburger, QR, Poster) -->
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="openQrModal()" class="px-3 py-2 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-800 font-extrabold text-xs transition flex items-center gap-1.5 border border-purple-200 shadow-sm touch-pad">
+          <span>📱</span>
+          <span class="hidden sm:inline">QR לסריקה</span>
+        </button>
+        <button type="button" onclick="openPosterModal()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-sky-600 text-white font-bold text-xs sm:text-sm shadow-md shadow-teal-700/20 hover:shadow-teal-700/35 hover:-translate-y-0.5 active:translate-y-0 transition flex items-center gap-1.5 touch-pad">
+          <span>📜</span>
+          <span>פוסטר המחקר</span>
+        </button>
+        <!-- Hamburger Menu Button (Right Side) -->
+        <button type="button" id="hamburger-btn" onclick="toggleNavDrawer()" aria-label="פתח תפריט ניווט" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center transition border border-slate-200 shadow-sm touch-pad">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Left Side Brand & Badges -->
+      <div class="flex items-center gap-2 sm:gap-3 text-right">
+        <div>
+          <span class="block text-[10px] sm:text-xs font-bold text-teal-700 tracking-wider uppercase">המרכז האקדמי רופין • אלונים</span>
+          <span class="block text-xs sm:text-base font-extrabold text-slate-900 font-display">מעבדת קוגניציה ואינהיביציה</span>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-sky-500 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-teal-500/25">
+          🌿
+        </div>
+      </div>
+
+    </nav>
+  </header>
+
+  <!-- Side Navigation Drawer (Right Side) -->
+  <div id="nav-drawer-backdrop" onclick="toggleNavDrawer(false)" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+  <aside id="nav-drawer" class="fixed top-0 right-0 bottom-0 z-50 w-80 max-w-[85vw] bg-white/95 backdrop-blur-xl shadow-2xl border-l border-slate-200 p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-out select-none">
+    <div class="space-y-6">
+      
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+        <button type="button" onclick="toggleNavDrawer(false)" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 font-bold flex items-center justify-center transition touch-pad">
+          ✕
+        </button>
+        <div class="flex items-center gap-2.5 text-right">
+          <div>
+            <span class="block text-[10px] font-bold text-teal-700 tracking-wider">ניווט מהיר</span>
+            <span class="block text-sm font-extrabold text-slate-900 font-display">תוכן המחקר</span>
+          </div>
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-500 to-sky-500 flex items-center justify-center text-white text-base shadow-sm">
+            🌿
+          </div>
+        </div>
+      </div>
+
+      <nav class="space-y-1.5 font-bold text-sm text-slate-700 text-right">
+        <a href="#" onclick="toggleNavDrawer(false)" class="flex items-center justify-end gap-3 px-3.5 py-2.5 rounded-xl hover:bg-teal-50 hover:text-teal-800 transition">
+          <span>ראש העמוד</span>
+          <span class="text-base">🏠</span>
+        </a>
+        <a href="#journey" onclick="toggleNavDrawer(false)" class="flex items-center justify-end gap-3 px-3.5 py-2.5 rounded-xl hover:bg-teal-50 hover:text-teal-800 transition">
+          <span>מסלול העבודה השנתי</span>
+          <span class="text-base">🧭</span>
+        </a>
+        <a href="#theory" onclick="toggleNavDrawer(false)" class="flex items-center justify-end gap-3 px-3.5 py-2.5 rounded-xl hover:bg-teal-50 hover:text-teal-800 transition">
+          <span>הרקע התיאורטי והשאלה</span>
+          <span class="text-base">🧠</span>
+        </a>
+        <a href="#experiments" onclick="toggleNavDrawer(false)" class="flex items-center justify-end gap-3 px-3.5 py-2.5 rounded-xl hover:bg-sky-50 hover:text-sky-800 transition">
+          <span>3 הניסויים בגורילה</span>
+          <span class="text-base">🦍</span>
+        </a>
+        <a href="#interactive-lab" onclick="toggleNavDrawer(false)" class="flex items-center justify-end gap-3 px-3.5 py-2.5 rounded-xl hover:bg-pink-50 hover:text-pink-800 transition">
+          <span>מעבדת התנסות חיה (Live)</span>
+          <span class="text-base">⚡</span>
+        </a>
+        <a href="#mentorship" onclick="toggleNavDrawer(false)" class="flex items-center justify-end gap-3 px-3.5 py-2.5 rounded-xl hover:bg-amber-50 hover:text-amber-800 transition">
+          <span>חניכה וטיפים לשנה ב'</span>
+          <span class="text-base">🤝</span>
+        </a>
+        <a href="#gorilla-journey-slider" onclick="toggleNavDrawer(false)" class="flex items-center justify-end gap-3 px-3.5 py-2.5 rounded-xl hover:bg-purple-50 hover:text-purple-800 transition">
+          <span>מסע הגורילה (סמסטר א' וב')</span>
+          <span class="text-base">📸</span>
+        </a>
+      </nav>
+
+    </div>
+
+    <div class="border-t border-slate-200 pt-4 space-y-2">
+      <button type="button" onclick="toggleNavDrawer(false); openPosterModal();" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-teal-600 to-sky-600 text-white font-extrabold text-xs shadow-md transition flex items-center justify-center gap-2 touch-pad">
+        <span>📜</span>
+        <span>צפייה בפוסטר המחקר</span>
+      </button>
+      <button type="button" onclick="toggleNavDrawer(false); openQrModal();" class="w-full py-2.5 px-4 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-800 font-extrabold text-xs border border-purple-200 transition flex items-center justify-center gap-2 touch-pad">
+        <span>📱</span>
+        <span>סריקת קוד QR</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-20 space-y-20 sm:space-y-24">
+
+    <!-- Hero Section -->
+    <section class="text-center pt-4 pb-2 max-w-4xl mx-auto space-y-5">
+      
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 border border-teal-200 shadow-sm text-xs font-bold text-teal-800">
+        <span class="flex h-2 w-2 rounded-full bg-teal-500 animate-ping"></span>
+        מפגש פתיחה, אוריינטציה וחניכה לאלונים החדשים • מחזור תשפ"ז
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-display leading-[1.2] text-slate-900 tracking-tight">
+        הקשר בין <span class="text-gradient">אינהיביציה</span> לפעולות החלפה בשטף מתמטי
+      </h1>
+
+      <p class="text-base sm:text-xl text-slate-600 font-medium leading-relaxed max-w-3xl mx-auto">
+        איך המוח מנהל שליטה קשבית כאשר אנחנו עוברים בין חיבור וחיסור? האם דיכוי תפיסתי במטלת פלנקר מפעיל את אותם משאבים קוגניטיביים המנהלים עלויות מעבר אריתמטיות?
+      </p>
+
+      <!-- Researcher Avatars / Team Row -->
+      <div class="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs sm:text-sm font-semibold text-slate-700">
+        
+        <div class="glass-card px-4 py-2.5 rounded-2xl flex items-center gap-3 shadow-sm border border-pink-100">
+          <div class="w-8 h-8 rounded-full bg-pink-100 text-pink-700 font-bold flex items-center justify-center text-xs">
+            טל
+          </div>
+          <div class="text-right">
+            <span class="block font-bold text-slate-900">טל אלאיוף</span>
+            <span class="text-slate-500 text-xs">חוקר צעיר • שנה ג'</span>
+          </div>
+        </div>
+
+        <div class="glass-card px-4 py-2.5 rounded-2xl flex items-center gap-3 shadow-sm border border-teal-100">
+          <div class="w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-xs">
+            מאיה
+          </div>
+          <div class="text-right">
+            <span class="block font-bold text-slate-900">מאיה פילו</span>
+            <span class="text-slate-500 text-xs">חוקרת צעירה • שנה ג'</span>
+          </div>
+        </div>
+
+        <div class="glass-card px-4 py-2.5 rounded-2xl flex items-center gap-3 shadow-sm border border-sky-100">
+          <div class="w-8 h-8 rounded-full bg-sky-100 text-sky-700 font-bold flex items-center justify-center text-xs">
+            ד"ר
+          </div>
+          <div class="text-right">
+            <span class="block font-bold text-slate-900">ד"ר ירדן גליקסמן</span>
+            <span class="text-slate-500 text-xs">מנחה אקדמית • פסיכולוגיה קוגניטיבית</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action CTA Buttons -->
+      <div class="pt-3 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+        <a href="#interactive-lab" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 hover:-translate-y-0.5 transition flex items-center gap-2">
+          <span>⚡</span>
+          <span>מעבדת הניסוי בשידור חי + מיני סשן</span>
+        </a>
+        <a href="#experiments" class="px-6 py-3.5 rounded-2xl glass-panel text-slate-800 font-bold text-sm sm:text-base hover:bg-white transition border border-slate-200/80 flex items-center gap-2">
+          <span>🦍</span>
+          <span>ארכיטקטורת 3 הניסויים בגורילה</span>
+        </a>
+      </div>
+
+    </section>
+
+    <!-- Annual Journey Timeline (Placed before theory per user request) -->
+    <section id="journey" class="space-y-8">
+      
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <span class="text-xs font-bold text-purple-700 tracking-wider uppercase px-3 py-1 rounded-full bg-purple-50 border border-purple-200">The Journey</span>
+        <h2 class="text-2xl sm:text-4xl font-extrabold font-display text-slate-900">
+          מסלול העבודה השנתי: מתיאוריה למעבדת קוגניציה
+        </h2>
+        <p class="text-slate-600 text-sm sm:text-base">
+          כך הפכנו מרעיונות ראשוניים על הנייר לשלושה ניסויים מתוכנתים שרצים במעבדה.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="glass-panel p-5 rounded-2xl border-r-4 border-r-teal-500 space-y-2">
+          <span class="text-xs font-extrabold text-teal-600 font-mono">סמסטר א'</span>
+          <h3 class="font-extrabold text-base text-slate-900">סקירת ספרות ומאמרים</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            צלילה למאמרי ליבה באנגלית על סוויצ'ינג ועלות א-סימטרית, פיצוח מושג הלינגרינג וחיבור למודל משפחות הפעולות של ירדן.
+          </p>
+        </div>
+
+        <div class="glass-panel p-5 rounded-2xl border-r-4 border-r-pink-500 space-y-2">
+          <span class="text-xs font-extrabold text-pink-600 font-mono">סמסטר ב'</span>
+          <h3 class="font-extrabold text-base text-slate-900">תכנון 3 ניסויים ואתיקה</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            גיבוש פרדיגמות קוגניטיביות מלאות, ניסוח השערות מתחרות, וכתיבת פרוטוקול אתיקה (אושר בהצלחה!).
+          </p>
+        </div>
+
+        <div class="glass-panel p-5 rounded-2xl border-r-4 border-r-amber-500 space-y-2">
+          <span class="text-xs font-extrabold text-amber-600 font-mono">סמסטר ב' (קיץ)</span>
+          <h3 class="font-extrabold text-base text-slate-900">תכנות מלא ב-Gorilla</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            בניית המטלות מאפס: שליטה ב-Displays, Zones, Spreadsheets, רנדומיזציה מורכבת של Micro-Sequences ומדידות זמנים מדויקות.
+          </p>
+        </div>
+
+        <div class="glass-panel p-5 rounded-2xl border-r-4 border-r-sky-500 space-y-2">
+          <span class="text-xs font-extrabold text-sky-600 font-mono">שנה ג' (עכשיו)</span>
+          <h3 class="font-extrabold text-base text-slate-900">איסוף נתונים במעבדה</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            הרצת נבדקים במעבדת המחשבים של רופין דרך Sona Systems, ניתוחי שונות מתקדמים ב-SPSS וחניכת האלונים החדשים.
+          </p>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Theoretical Foundation Section -->
+    <section id="theory" class="space-y-8">
+      
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <span class="text-xs font-bold text-teal-700 tracking-wider uppercase px-3 py-1 rounded-full bg-teal-50 border border-teal-200">The Theoretical Pipeline</span>
+        <h2 class="text-2xl sm:text-4xl font-extrabold font-display text-slate-900">
+          מהתיאוריה הקוגניטיבית לשאלת המחקר
+        </h2>
+        <p class="text-slate-600 text-sm sm:text-base">
+          עמודי התווך של המודל המחקרי: שליפה, מעבר וא-סימטריה.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        
+        <div class="glass-panel p-6 rounded-3xl space-y-4 hover:-translate-y-1 transition duration-300 shadow-sm hover:shadow-md border-t-4 border-t-teal-400">
+          <div class="w-12 h-12 rounded-2xl bg-teal-100 text-teal-800 flex items-center justify-center text-2xl font-bold shadow-inner">
+            ➕
+          </div>
+          <h3 class="font-extrabold text-lg text-slate-900 font-display">1. שטף מתמטי וסוויצ'ינג</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">שטף מתמטי (Math Fluency) הוא היכולת לפתור ביעילות ובמהירות תרגילי חשבון פשוטים. ביצועו דורש גמישות קוגניטיבית ויכולת מעבר (Switching) בין פעולות חשבוניות, מעבר הנושא עמו "עלות מעבר" (Switch Cost).</p>
+          <div class="p-3 bg-white/90 rounded-xl border border-teal-100 text-center font-mono font-bold text-teal-800 text-xs shadow-sm" dir="ltr">
+            SC = RT(Switch) - RT(Repeat)
+          </div>
+        </div>
+
+        <div class="glass-panel p-6 rounded-3xl space-y-4 hover:-translate-y-1 transition duration-300 shadow-sm hover:shadow-md border-t-4 border-t-pink-400">
+          <div class="w-12 h-12 rounded-2xl bg-pink-100 text-pink-800 flex items-center justify-center text-2xl font-bold shadow-inner">
+            ⚖️
+          </div>
+          <h3 class="font-extrabold text-lg text-slate-900 font-display">2. עלות מעבר א-סימטרית</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">עלות המעבר לפעולה הדומיננטית והקלה גבוהה יותר מהמעבר בכיוון ההפוך. כלומר המעבר מחיסור לחיבור יהיה גבוה יותר מהמעבר מחיבור לחיסור.</p>
+          <div class="p-2.5 bg-pink-50/70 rounded-xl text-xs font-bold text-pink-800 text-center border border-pink-100">
+            Gliksman &amp; Levy (2025)
+          </div>
+        </div>
+
+        <div class="glass-panel p-6 rounded-3xl space-y-4 hover:-translate-y-1 transition duration-300 shadow-sm hover:shadow-md border-t-4 border-t-purple-400">
+          <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-800 flex items-center justify-center text-2xl font-bold shadow-inner">
+            ⏳
+          </div>
+          <h3 class="font-extrabold text-lg text-slate-900 font-display">3. מנגנון הלינגרינג (Lingering)</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">כדי לפתור תרגיל חיסור, המערכת חייבת להפעיל אינהיביציה ולדכא את פעולת החיבור הדומיננטית. לעיתים דיכוי זה משייר ומעכב את ביצוע פעולת החיבור בצעד הבא.</p>
+          <div class="p-2.5 bg-purple-50/70 rounded-xl text-xs font-bold text-purple-800 text-center border border-purple-100">
+            אינהיביציה משיירת
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- The 3 Experiments in Gorilla -->
+    <section id="experiments" class="space-y-8">
+      
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <span class="text-xs font-bold text-sky-700 tracking-wider uppercase px-3 py-1 rounded-full bg-sky-50 border border-sky-200">Core Methodology</span>
+        <h2 class="text-2xl sm:text-4xl font-extrabold font-display text-slate-900">
+          3 הניסויים בפלטפורמת Gorilla
+        </h2>
+        <p class="text-slate-600 text-sm sm:text-base">
+          מניסוי מתאמי ועד מיקרו רצפים משולבים (Interleaved) ברזולוציית הצעד הבודד.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Experiment 1 -->
+        <div class="glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between border-t-8 border-t-teal-500 shadow-lg shadow-teal-950/5 relative overflow-hidden group">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-xs font-black">ניסוי 1 • מתאמי (Correlational)</span>
+              <span class="text-xs font-bold text-slate-400">Baseline Study</span>
+            </div>
+
+            <h3 class="text-xl font-extrabold text-slate-900 font-display">קשר בסיסי בין יכולות</h3>
+
+            <p class="text-sm text-slate-600 leading-relaxed">
+              בחינת הקשר הישיר בין ביצועי אינהיביציה כללית לעלויות מעבר בשטף חשבוני.
+            </p>
+
+            <ul class="space-y-2.5 text-xs sm:text-sm text-slate-700">
+              <li class="flex items-start gap-2">
+                <span class="text-teal-600 font-bold">✔</span>
+                <span><strong>מטלת פלנקר מלאה:</strong> 128 צעדים (50% תואם, 50% לא-תואם) למדידת אפקט פלנקר נקי.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-teal-600 font-bold">✔</span>
+                <span><b>מטלת BGU-MF:</b> כ-160 תרגילי חיבור וחיסור, מדידת Repeat לעומת Switch.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-teal-600 font-bold">✔</span>
+                <span><strong>איזון מלא (Counterbalancing):</strong> חצי מהנבדקים מתחילים בפלנקר וחצי בשטף מתמטי.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-slate-200/80">
+            <div class="p-3 bg-teal-50/80 rounded-xl text-center text-xs font-mono font-bold text-teal-800 border border-teal-100" dir="ltr">
+              Flanker (128) ⇄ BGU-MF (160)
+            </div>
+          </div>
+        </div>
+
+        <!-- Experiment 2 -->
+        <div class="glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between border-t-8 border-t-pink-500 shadow-lg shadow-pink-950/5 relative overflow-hidden group">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="px-3 py-1 rounded-full bg-pink-100 text-pink-800 text-xs font-black">ניסוי 2 • סיבתי Pre/Post</span>
+              <span class="text-xs font-bold text-pink-600 font-mono">75% Conflict Load</span>
+            </div>
+
+            <h3 class="text-xl font-extrabold text-slate-900 font-display">עירור אינהיביציה</h3>
+
+            <p class="text-sm text-slate-600 leading-relaxed">
+              מניפולציה יזומה של הפעלת מנגנון האינהיביציה לפני ביצוע שטף מתמטי:
+            </p>
+
+            <ul class="space-y-2.5 text-xs sm:text-sm text-slate-700">
+              <li class="flex items-start gap-2">
+                <span class="text-pink-600 font-bold">✔</span>
+                <span><strong>מדידת בסיס (Pre):</strong> בלוק ראשוני של שטף מתמטי.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-pink-600 font-bold">✔</span>
+                <span><strong>פלנקר מניפולטיבי:</strong> 100 צעדים עם <strong>75% צעדים לא-תואמים</strong> לעירור עומס אינהיביציה.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-pink-600 font-bold">✔</span>
+                <span><strong>מדידת סיום (Post):</strong> בלוק סיום של שטף מתמטי.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-slate-200/80">
+            <div class="p-3 bg-pink-50/80 rounded-xl text-center text-xs font-mono font-bold text-pink-800 border border-pink-100" dir="ltr">
+              Pre BGU ➔ High Flanker ➔ Post BGU
+            </div>
+          </div>
+        </div>
+
+        <!-- Experiment 3 -->
+        <div class="glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between border-t-8 border-t-purple-500 shadow-lg shadow-purple-950/5 relative overflow-hidden group">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="px-3 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-black">ניסוי 3 • משולב Interleaved</span>
+              <span class="text-xs font-bold text-purple-600 font-mono">Micro-Sequences</span>
+            </div>
+
+            <h3 class="text-xl font-extrabold text-slate-900 font-display">השפעה בצעד הבודד</h3>
+
+            <p class="text-sm text-slate-600 leading-relaxed">שילוב דינמי של שתי המטלות ברזולוציה עדינה.</p>
+
+            <ul class="space-y-2.5 text-xs sm:text-sm text-slate-700">
+              <li class="flex items-start gap-2">
+                <span class="text-purple-600 font-bold">✔</span>
+                <span><strong>מיקרו-רצפים ביחס 4:2:</strong> 4 צעדי פלנקר בעומס גבוה ➔ מיד לאחריהם 2 תרגילי חשבון.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-purple-600 font-bold">✔</span>
+                <span><strong>מבחן השערות מתחרות:</strong> האם אינהיביציה מייעלת ומאיצה (ייעול), או יוצרת דיכוי עודף שמחמיר את המעבר מחיסור לחיבור (לינגרינג מוגבר)?</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-purple-600 font-bold">✔</span>
+                <span><strong>אימות מהיר במקלדת:</strong> מקש F לשגוי ומקש J לנכון לשמירה על שטף מוטורי אחיד.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-slate-200/80">
+            <div class="p-3 bg-purple-50/80 rounded-xl text-center text-xs font-mono font-bold text-purple-800 border border-purple-100" dir="ltr">
+              [4 Flankers (75%)] ➔ [2 Math Trials]
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Interactive Live Lab (Placed after experiments per user request) -->
+    <section id="interactive-lab" class="glass-panel rounded-3xl p-5 sm:p-10 shadow-xl border-2 border-pink-200/90 relative overflow-hidden">
+      
+      <div class="max-w-3xl mx-auto text-center space-y-3 mb-6">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-pink-100 text-pink-800 font-extrabold text-xs">
+          <span>⚡</span>
+          <span>מעבדת התנסות חיה • נסו בעצמכם</span>
+        </div>
+        <h2 class="text-2xl sm:text-4xl font-extrabold font-display text-slate-900">
+          התנסו בצעד ניסויי ב-Live
+        </h2>
+        <p class="text-slate-600 text-xs sm:text-sm max-w-2xl mx-auto">
+          בחנו את מהירות התגובה (RT) והאינהיביציה שלכם. במחשב הקישו על המקשים <kbd class="px-2 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold">F</kbd> ו-<kbd class="px-2 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold">J</kbd>, ובנייד פשוט הקישו על משטחי המגע הגדולים למטה!
+        </p>
+      </div>
+
+      <!-- Interactive Playground Container -->
+      <div class="max-w-2xl mx-auto bg-white/95 rounded-3xl p-5 sm:p-8 shadow-inner border border-slate-200/90 text-center relative flex flex-col justify-between select-none">
+
+        <!-- Mode Selector -->
+        <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-4">
+          <button type="button" id="mode-flanker-btn" onclick="setLabMode('flanker')" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-teal-600 text-white shadow-md transition touch-pad">
+            🏹 פלנקר (אינהיביציה)
+          </button>
+          <button type="button" id="mode-math-btn" onclick="setLabMode('math')" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad">
+            🔢 אימות חשבון (בודד)
+          </button>
+          <button type="button" id="mode-session-btn" onclick="setLabMode('session')" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-100 text-purple-800 border-2 border-purple-300 hover:bg-purple-200 transition touch-pad flex items-center gap-1.5 shadow-sm">
+            <span>⚡</span>
+            <span>סשן 6 צעדים (4 פלנקר ➔ 2 חשבון)</span>
+          </button>
+        </div>
+
+        <!-- 6-Step Progress Bar -->
+        <div id="session-progress-bar" class="hidden mb-4 p-3 bg-purple-50/90 rounded-2xl border border-purple-200 text-right space-y-2">
+          <div class="flex items-center justify-between text-xs font-bold">
+            <span id="session-step-counter" class="text-purple-900 font-extrabold">צעד 1 מתוך 6</span>
+            <span id="session-step-type" class="text-purple-700 bg-white px-2.5 py-0.5 rounded-full border border-purple-200">פלנקר (צעד 1 מתוך 4)</span>
+          </div>
+          <div class="w-full h-2.5 bg-purple-200 rounded-full overflow-hidden">
+            <div id="session-progress-fill" class="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300" style="width: 16%;"></div>
+          </div>
+        </div>
+
+        <!-- Stimulus Display Box -->
+        <div id="stimulus-container" class="py-6 sm:py-8 px-4 my-auto bg-slate-50/70 rounded-2xl border border-slate-200/60">
+          <div id="instruction-hint" class="text-xs sm:text-sm text-slate-500 font-semibold mb-3">
+            הגיבו לחץ המרכזי בלבד (התעלמו מהסובבים)
+          </div>
+          
+          <div id="stimulus-text" dir="ltr" style="direction: ltr !important; unicode-bidi: isolate;" class="text-4xl sm:text-6xl font-black font-mono tracking-widest text-slate-900 min-h-[70px] flex items-center justify-center transition-all">→ ← → → ←</div>
+
+          <div id="feedback-msg" class="h-6 mt-3 text-xs sm:text-sm font-extrabold text-teal-600 animate-pulse">לחצו על 'התחל צעד' כדי להתחיל</div>
+        </div>
+
+        <!-- Response Touchpads (Strict LTR: F on Left, J on Right) -->
+        <div class="space-y-4 mt-5">
+          <div dir="ltr" style="direction: ltr !important;" class="grid grid-cols-2 gap-3 sm:gap-4 max-w-lg mx-auto">
+            
+            <!-- Key F Touchpad (Left side) -->
+            <button type="button" id="btn-key-f" onclick="handleTrialResponse('F')" class="touch-pad py-4 sm:py-5 px-3 sm:px-4 rounded-2xl bg-white border-2 border-slate-300 font-bold text-slate-700 active:bg-rose-50 active:border-rose-400 active:scale-95 transition-all shadow-md flex flex-col items-center justify-center cursor-pointer">
+              <div class="flex items-center gap-1">
+                <span class="text-2xl sm:text-3xl font-black font-mono text-slate-800">F</span>
+                <span class="text-xs text-slate-400 font-bold">/ כ</span>
+              </div>
+              <span id="label-key-f" dir="rtl" class="text-xs sm:text-sm font-extrabold text-rose-600 mt-1">חץ שמאלה</span>
+              <span class="text-[10px] text-slate-400 mt-0.5 sm:hidden" dir="rtl">הקש כאן בנייד 📱</span>
+            </button>
+
+            <!-- Key J Touchpad (Right side) -->
+            <button type="button" id="btn-key-j" onclick="handleTrialResponse('J')" class="touch-pad py-4 sm:py-5 px-3 sm:px-4 rounded-2xl bg-white border-2 border-slate-300 font-bold text-slate-700 active:bg-teal-50 active:border-teal-400 active:scale-95 transition-all shadow-md flex flex-col items-center justify-center cursor-pointer">
+              <div class="flex items-center gap-1">
+                <span class="text-2xl sm:text-3xl font-black font-mono text-slate-800">J</span>
+                <span class="text-xs text-slate-400 font-bold">/ ח</span>
+              </div>
+              <span id="label-key-j" dir="rtl" class="text-xs sm:text-sm font-extrabold text-teal-600 mt-1">חץ ימינה</span>
+              <span class="text-[10px] text-slate-400 mt-0.5 sm:hidden" dir="rtl">הקש כאן בנייד 📱</span>
+            </button>
+
+          </div>
+
+          <!-- Pacing Action Bar -->
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <button type="button" id="start-trial-btn" onclick="startTrial()" class="touch-pad px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold text-sm shadow-md hover:shadow-lg active:scale-95 transition">
+              התחל צעד (Space / הקש)
+            </button>
+            <div id="live-rt" class="text-xs sm:text-sm font-mono font-bold text-slate-600 bg-slate-100 px-4 py-2.5 rounded-xl border border-slate-200">זמן תגובה: -- ms</div>
+          </div>
+        </div>
+
+        <!-- 6-Step Results Card -->
+        <div id="session-results-card" class="hidden mt-6 p-5 sm:p-6 bg-gradient-to-br from-purple-50 via-white to-pink-50 rounded-2xl border-2 border-purple-300 text-right space-y-4 shadow-lg animate-fadeIn">
+          <div class="flex items-center justify-between border-b border-purple-200 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">🏆</span>
+              <h3 class="font-extrabold text-base sm:text-lg text-purple-950 font-display">תוצאות סשן ניסוי 3 (Interleaved)</h3>
+            </div>
+            <span id="sc-user-score-badge" class="px-3 py-1 rounded-xl text-xs font-black bg-purple-600 text-white">SC: -- ms</span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center">
+            <div class="p-2.5 bg-white rounded-xl border border-purple-100 shadow-sm">
+              <span class="block text-[10px] font-bold text-slate-500">פלנקר (אינהיביציה)</span>
+              <span id="sc-repeat-rt" class="text-base sm:text-lg font-black font-mono text-teal-700">-- ms</span>
+            </div>
+            <div class="p-2.5 bg-white rounded-xl border border-purple-100 shadow-sm">
+              <span class="block text-[10px] font-bold text-slate-500">חשבון (Switch)</span>
+              <span id="sc-switch-rt" class="text-base sm:text-lg font-black font-mono text-pink-700">-- ms</span>
+            </div>
+            <div class="p-2.5 bg-purple-100/70 rounded-xl border border-purple-200 shadow-sm">
+              <span class="block text-[10px] font-extrabold text-purple-900">עלות מעבר (SC)</span>
+              <span id="sc-diff-rt" class="text-base sm:text-lg font-black font-mono text-purple-900">-- ms</span>
+            </div>
+          </div>
+
+          <p id="sc-insight-text" class="text-xs sm:text-sm text-purple-950/80 leading-relaxed font-medium bg-white/80 p-3 rounded-xl border border-purple-100">
+            הסבר התוצאות יחושב כאן...
+          </p>
+
+          <div class="flex justify-center pt-1">
+            <button type="button" onclick="restartSession()" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs sm:text-sm shadow-md transition touch-pad">
+              🔄 רוצים לנסות שוב את הסשן?
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Peer Mentorship & Golden Tips -->
+    <section id="mentorship" class="glass-panel rounded-3xl p-6 sm:p-10 shadow-lg border-2 border-amber-200/80 bg-gradient-to-br from-amber-50/60 via-white/80 to-teal-50/40 space-y-6">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200/60 pb-5">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold mb-2">
+            🤝 מחברים בין השנתונים
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold font-display text-slate-900">
+            אינטרוספקציה, החוויה שלנו וטיפי הזהב לשנה ב'
+          </h2>
+        </div>
+        <div class="px-4 py-2 rounded-xl bg-amber-500 text-white font-black text-xs sm:text-sm text-center shadow-md shadow-amber-500/20">
+          אנחנו החונכים שלכם השנה!
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-700 leading-relaxed">
+        
+        <div class="space-y-3 p-5 rounded-2xl bg-white/90 border border-slate-200/80 shadow-sm">
+          <h4 class="font-extrabold text-base text-slate-900 flex items-center gap-2">
+            <span>🌱</span>
+            <span>איך זה מרגיש מבפנים? (החוויה שלנו)</span>
+          </h4>
+          <p>
+            ההתחלה בסמסטר א' יכולה להרגיש מציפה: מאמרים באנגלית ברמה אקדמית גבוהה, מושגים קוגניטיביים שנראים מופשטים, והמון שאלות פתוחות. המעבר לעבודה על Gorilla הפך את התיאוריה למוחשית.
+          </p>
+          <p class="font-semibold text-teal-800">
+            התרומה שלנו: הבאנו יוזמה, לוחות עבודה משותפים ודיוק מתודולוגי. מה שקיבלנו בתמורה זו שפה מדעית אמיתית ומסוגלות מחקרית עצומה.
+          </p>
+        </div>
+
+        <div class="space-y-3 p-5 rounded-2xl bg-white/90 border border-slate-200/80 shadow-sm">
+          <h4 class="font-extrabold text-base text-amber-900 flex items-center gap-2">
+            <span>💡</span>
+            <span>3 עצות זהב שהיינו רוצים לשמוע בשנה שעברה:</span>
+          </h4>
+          <ul class="space-y-2 text-xs sm:text-sm">
+            <li class="flex items-start gap-2">
+              <span class="text-amber-600 font-bold">1.</span>
+              <span><strong>חוסר ודאות זה חלק מהמדע:</strong> אל תיבהלו אם בהתחלה הכל נראה מסורבל. זה מתבהר לחלוטין ברגע שמתחילים לבנות את הניסוי.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-amber-600 font-bold">2.</span>
+              <span><strong>לא לפחד לשאול שאלות את המרצה:</strong> גם אם הן מרגישות מטופשות בסוף מטרת החוקר צעיר היא ללמוד ולהכנס לתחום והמרצה ככל הנראה יעריך את זה שאתם שואלים, מתעניינים ומביעים דעה.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-amber-600 font-bold">3.</span>
+              <span><strong>תשתמשו בנו!</strong> כל שאלה, תקלה טכנית או דילמה תיאורטית — אנחנו פה בשבילכם.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Gorilla Journey Slider Section (100% Guaranteed Vector SVG Showcase) -->
+    <section id="gorilla-journey-slider" class="glass-panel rounded-3xl p-6 sm:p-10 shadow-lg border border-white space-y-6 text-center">
+      <div class="max-w-xl mx-auto space-y-2">
+        <span class="text-xs font-bold text-rose-700 tracking-wider uppercase px-3 py-1 rounded-full bg-rose-50 border border-rose-200">מסע השנה של אלונים</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold font-display text-slate-900">
+          מסע הגורילה שלנו: מסמסטר א' לסמסטר ב'
+        </h2>
+        <p class="text-sm text-slate-600">
+          החליקו בין השלבים כדי לראות איך עברנו מהלחץ של סמסטר א' לניצחון המרשים בסמסטר ב'!
+        </p>
+      </div>
+
+      <!-- Semester Toggle Buttons -->
+      <div class="flex justify-center gap-3">
+        <button type="button" onclick="setSemesterView('a')" id="sem-btn-a" class="px-5 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm bg-rose-500 text-white shadow-md transition touch-pad">
+          סמסטר א' • בורחים מהגורילה 🦍💨
+        </button>
+        <button type="button" onclick="setSemesterView('b')" id="sem-btn-b" class="px-5 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad">
+          סמסטר ב' • מנצחים את הגורילה 🏆🥊
+        </button>
+      </div>
+
+      <!-- Showcase Container using 100% Robust Vector SVG -->
+      <div class="max-w-3xl mx-auto bg-white/90 p-4 rounded-3xl border border-slate-200 shadow-md">
+        <div id="vector-slider-container" class="overflow-hidden rounded-2xl bg-slate-900 text-white border border-slate-800 flex flex-col items-center justify-center min-h-[380px] sm:min-h-[460px] p-6 relative">
+          
+          <!-- Semester A Vector Art (RUNNING AWAY) -->
+          <div id="slide-sem-a" class="w-full space-y-4 transition-all duration-500">
+            <div class="flex justify-center items-center gap-4 py-2">
+              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-3xl">🏃‍♂️🦍</div>
+              <div class="text-right space-y-1">
+                <span class="text-xs font-bold text-rose-400 uppercase tracking-widest">סמסטר א' • לחץ ותכנות</span>
+                <h3 class="text-lg sm:text-xl font-black font-display text-white">RUNNING AWAY (בורחים מהגורילה)</h3>
+              </div>
+            </div>
+            <div class="w-full h-56 sm:h-64 bg-gradient-to-r from-rose-950 via-slate-900 to-amber-950 rounded-xl border border-rose-500/30 flex items-center justify-center relative overflow-hidden p-4">
+              <svg viewBox="0 0 800 450" class="w-full h-full object-contain">
+                <rect width="800" height="450" fill="#0f172a" rx="12"/>
+                <path d="M0 350 L800 350" stroke="#334155" stroke-width="8"/>
+                <circle cx="400" cy="180" r="55" fill="#1e293b"/>
+                <path d="M345 180 C345 130 455 130 455 180 L470 320 L330 320 Z" fill="#334155"/>
+                <text x="400" y="190" font-family="Rubik" font-size="16" fill="#f43f5e" text-anchor="middle" font-weight="bold">YOUR EXPERIMENT IS DUE!</text>
+                <rect x="120" y="80" width="70" height="50" fill="#f8fafc" rx="4" transform="rotate(-15 120 80)"/>
+                <text x="155" y="105" font-family="monospace" font-size="10" fill="#0f172a" text-anchor="middle" font-weight="bold">SWITCH?</text>
+                <rect x="620" y="90" width="75" height="55" fill="#f8fafc" rx="4" transform="rotate(12 620 90)"/>
+                <text x="657" y="115" font-family="monospace" font-size="9" fill="#e11d48" text-anchor="middle" font-weight="bold">ERROR 404</text>
+                <circle cx="220" cy="240" r="30" fill="#cbd5e1"/>
+                <path d="M190 280 L250 280 L230 360 L210 360 Z" fill="#14b8a6"/>
+                <circle cx="580" cy="240" r="30" fill="#cbd5e1"/>
+                <path d="M550 280 L610 280 L590 360 L570 360 Z" fill="#ec4899"/>
+                <rect x="200" y="385" width="400" height="40" fill="#4c0519" rx="8" stroke="#f43f5e" stroke-width="2"/>
+                <text x="400" y="410" font-family="monospace" font-size="12" fill="#fda4af" text-anchor="middle" font-weight="bold">⚠️ RUNNING AWAY: SWITCH COST TOO HIGH!</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Semester B Vector Art (WINNING) -->
+          <div id="slide-sem-b" class="w-full space-y-4 transition-all duration-500 hidden">
+            <div class="flex justify-center items-center gap-4 py-2">
+              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-3xl">🏆🥊</div>
+              <div class="text-right space-y-1">
+                <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">סמסטר ב' • הצלחה במעבדה</span>
+                <h3 class="text-lg sm:text-xl font-black font-display text-white">WINNING (מנצחים את הגורילה)</h3>
+              </div>
+            </div>
+            <div class="w-full h-56 sm:h-64 bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 rounded-xl border border-emerald-500/30 flex items-center justify-center relative overflow-hidden p-4">
+              <svg viewBox="0 0 800 450" class="w-full h-full object-contain">
+                <rect width="800" height="450" fill="#0f172a" rx="12"/>
+                <path d="M0 350 L800 350" stroke="#334155" stroke-width="8"/>
+                <ellipse cx="400" cy="310" rx="90" ry="40" fill="#1e293b"/>
+                <text x="400" y="315" font-family="Rubik" font-size="14" fill="#10b981" text-anchor="middle" font-weight="bold">EXPERIMENT PASSED ✅</text>
+                <circle cx="220" cy="210" r="30" fill="#a7f3d0"/>
+                <circle cx="580" cy="210" r="30" fill="#a7f3d0"/>
+                <rect x="360" y="160" width="80" height="90" fill="#fbbf24" rx="8"/>
+                <text x="400" y="145" font-family="Rubik" font-size="28" text-anchor="middle">🏆</text>
+                <rect x="180" y="385" width="440" height="40" fill="#064e3b" rx="8" stroke="#10b981" stroke-width="2"/>
+                <text x="400" y="410" font-family="monospace" font-size="12" fill="#6ee7b7" text-anchor="middle" font-weight="bold">WINNING: ALL 3 EXPERIMENTS COMPLETE // DATA SAVED 🎉</text>
+              </svg>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Poster View Modal (Printable A4 Replica) -->
+  <div id="poster-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+    <div class="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-6 sm:p-8 my-8 border border-slate-200">
+      
+      <div class="flex items-center justify-between border-b pb-4 mb-6 no-print">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">תצוגת פוסטר מחקר A4 לאורך</h3>
+          <p class="text-xs text-slate-500">פורמט מוכן להדפסה ישירה / שמירה כ-PDF עבור יום האוריינטציה</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button type="button" onclick="window.print()" class="px-4 py-2 rounded-xl bg-teal-600 text-white font-bold text-xs shadow-md hover:bg-teal-700 transition flex items-center gap-1.5 touch-pad">
+            <span>🖨️</span>
+            <span>הדפסה / PDF</span>
+          </button>
+          <button type="button" onclick="closePosterModal()" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold flex items-center justify-center transition touch-pad">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable A4 Poster Sheet -->
+      <div class="bg-gradient-to-br from-[#f0fdf4] via-[#fdf2f8] to-[#f0f9ff] p-6 rounded-2xl border border-slate-200 text-slate-800 space-y-4 shadow-sm">
+        <div class="text-center bg-white/90 p-4 rounded-xl border shadow-sm">
+          <span class="text-[11px] font-bold text-teal-700">המרכז האקדמי רופין • תוכנית המצטיינים "אלונים"</span>
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900 mt-1">הקשר בין אינהיביציה לפעולות החלפה בשטף מתמטי</h2>
+          <div class="text-xs text-slate-600 mt-1 font-semibold">
+            חוקרים: טל אלאיוף ומאיה פילו • מנחה אקדמית: ד"ר ירדן גליקסמן
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="bg-white/90 p-3.5 rounded-xl border space-y-1">
+            <strong class="text-teal-800 block text-sm font-extrabold">1. מסלול העבודה השנתי</strong>
+            <p class="text-slate-600 leading-relaxed">סמסטר א' (סקירת ספרות) ➔ סמסטר ב' (גיבוש 3 ניסויים ואתיקה) ➔ קיץ (תכנות Gorilla) ➔ שנה ג' (איסוף נתונים במעבדה).</p>
+          </div>
+          <div class="bg-white/90 p-3.5 rounded-xl border space-y-1">
+            <strong class="text-pink-800 block text-sm font-extrabold">2. רקע ותיאוריה קוגניטיבית</strong>
+            <p class="text-slate-600 leading-relaxed">שטף מתמטי דורש מעבר מהיר (Switching). המעבר יוצר עלות מעבר (SC), כאשר המעבר מחיסור לחיבור מאופיין בעלות א-סימטרית ובדיכוי משייר (Lingering Inhibition).</p>
+          </div>
+        </div>
+
+        <div class="bg-white/90 p-4 rounded-xl border space-y-2">
+          <strong class="text-purple-900 block text-sm font-extrabold">3. גולת הכותרת: 3 הניסויים בפלטפורמת Gorilla</strong>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px]">
+            <div class="p-2.5 rounded-xl bg-teal-50 border border-teal-200">
+              <strong class="block text-teal-900 mb-0.5">ניסוי 1: מתאמי</strong>
+              מטלת פלנקר (128 צעדים) לצד שטף BGU-MF מאוזן לבדיקת מתאם בסיסי.
+            </div>
+            <div class="p-2.5 rounded-xl bg-pink-50 border border-pink-200">
+              <strong class="block text-pink-900 mb-0.5">ניסוי 2: סיבתי Pre/Post</strong>
+              פלנקר מניפולטיבי בעומס קונפליקט גבוה (75%) לבחינת עירור אינהיביציה.
+            </div>
+            <div class="p-2.5 rounded-xl bg-purple-50 border border-purple-200">
+              <strong class="block text-purple-900 mb-0.5">ניסוי 3: משולב Interleaved</strong>
+              מיקרו-רצפים (4 פלנקר ➔ 2 חשבון) לבחינת השפעה בצעד הבודד.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- QR Code Modal -->
+  <div id="qr-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl p-6 text-center space-y-4 border border-slate-200">
+      
+      <div class="flex items-center justify-between border-b pb-3">
+        <h3 class="font-extrabold text-slate-900 text-base">סריקה מהירה בטלפון</h3>
+        <button type="button" onclick="closeQrModal()" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold flex items-center justify-center transition touch-pad">
+          ✕
+        </button>
+      </div>
+
+      <div class="p-4 bg-slate-50 rounded-2xl border flex justify-center items-center">
+        <img id="qr-image" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://alonim-research.pages.dev&color=0f172a&bgcolor=f8fafc" alt="QR Code" class="w-48 h-48 rounded-xl shadow-sm">
+      </div>
+
+      <p class="text-xs text-slate-600 font-medium">
+        פתחו את המצלמה בטלפון הנייד שלכם וסרקו את הקוד כדי להפעיל את מעבדת הניסוי ישירות אצלכם!
+      </p>
+
+      <button type="button" id="copy-link-btn" onclick="copySiteLink()" class="w-full py-2.5 rounded-xl bg-purple-600 text-white font-extrabold text-xs shadow-md hover:bg-purple-700 transition touch-pad flex items-center justify-center gap-1.5">
+        <span>🔗</span>
+        <span>העתקת קישור לאתר</span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-200/60 bg-white/60 py-8 text-center text-xs text-slate-500 space-y-2">
+    <div class="font-bold text-slate-700">
+      תוכנית המצטיינים "אלונים" • הפקולטה למדעי ההתנהגות • המרכז האקדמי רופין 2026
+    </div>
+    <div>
+      פרויקט מחקר מאת טל אלאיוף ומאיה פילו • בהנחיית ד"ר ירדן גליקסמן
+    </div>
+  </footer>
+
+  <!-- Floating Back to Top Button -->
+  <button type="button" id="back-to-top-btn" onclick="scrollToTop()" aria-label="חזרה לראש העמוד" class="fixed bottom-6 left-6 z-40 w-12 h-12 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/90 text-teal-700 shadow-xl shadow-teal-900/10 hover:bg-gradient-to-tr hover:from-teal-600 hover:to-sky-600 hover:text-white hover:border-transparent hover:-translate-y-1 active:translate-y-0 transition-all duration-300 opacity-0 pointer-events-none translate-y-4 flex items-center justify-center touch-pad group">
+    <svg class="w-5 h-5 transform group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+    </svg>
+  </button>
+
+  <script>
+    // Audio synthesizer for feedback (Zero dependencies, iOS Safari compatible)
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+      return audioCtx;
+    }
+
+    ['touchstart', 'touchend', 'click', 'keydown'].forEach(evt => {
+      window.addEventListener(evt, () => {
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume().catch(() => {});
+        }
+      }, { once: true, passive: true });
+    });
+
+    function playTone(freq, type = 'sine', duration = 0.12) {
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function triggerHaptic(type = 20) {
+      try {
+        if (navigator.vibrate) {
+          navigator.vibrate(type);
+        }
+      } catch (e) {}
+    }
+
+    function playCorrectSound() {
+      playTone(587.33, 'triangle', 0.1);
+      setTimeout(() => playTone(880, 'sine', 0.14), 70);
+      triggerHaptic(25);
+    }
+
+    function playWrongSound() {
+      playTone(220, 'sawtooth', 0.18);
+      triggerHaptic([40, 40, 40]);
+    }
+
+    // State Variables
+    let currentMode = 'flanker';
+    let trialActive = false;
+    let trialStartTime = 0;
+    let expectedKey = '';
+
+    // 6-Step Mini-Session State (Experiment 3 Interleaved: exactly 4 Flankers ➔ 2 Math Trials)
+    let sessionActive = false;
+    let sessionStepIndex = 0;
+    let sessionResults = [];
+
+    const sessionSequence = [
+      { text: '→ ← → → ←', key: 'J', type: 'flanker', label: 'פלנקר (צעד 1 מתוך 4)' },
+      { text: '← ← → ← ←', key: 'J', type: 'flanker', label: 'פלנקר (צעד 2 מתוך 4)' },
+      { text: '→ → ← → →', key: 'F', type: 'flanker', label: 'פלנקר (צעד 3 מתוך 4)' },
+      { text: '← → → → ←', key: 'F', type: 'flanker', label: 'פלנקר (צעד 4 מתוך 4)' },
+      { text: '7 + 3 = 10', key: 'J', type: 'math_repeat', label: 'חשבון 1: חיבור נכון (Repeat • נכון = J)' },
+      { text: '12 - 5 = 6', key: 'F', type: 'math_switch', label: 'חשבון 2: חיסור שגוי (Switch • שגוי = F)' }
+    ];
+
+    const flankerPool = [
+      { text: '← ← → ← ←', key: 'J', hint: 'החץ המרכזי פונה ימינה' },
+      { text: '→ → ← → →', key: 'F', hint: 'החץ המרכזי פונה שמאלה' },
+      { text: '→ → → → →', key: 'J', hint: 'החץ המרכזי פונה ימינה' },
+      { text: '← ← ← ← ←', key: 'F', hint: 'החץ המרכזי פונה שמאלה' },
+    ];
+
+    const mathPool = [
+      { text: '7 + 3 = 10', key: 'J', hint: 'התרגיל והתוצאה נכונים' },
+      { text: '8 - 3 = 5',  key: 'J', hint: 'התרגיל והתוצאה נכונים' },
+      { text: '9 + 4 = 13', key: 'J', hint: 'התרגיל והתוצאה נכונים' },
+      { text: '12 - 5 = 7', key: 'J', hint: 'התרגיל והתוצאה נכונים' },
+    ];
+
+    function setLabMode(mode) {
+      currentMode = mode;
+      const flankerBtn = document.getElementById('mode-flanker-btn');
+      const mathBtn = document.getElementById('mode-math-btn');
+      const sessionBtn = document.getElementById('mode-session-btn');
+      const labelF = document.getElementById('label-key-f');
+      const labelJ = document.getElementById('label-key-j');
+      const hint = document.getElementById('instruction-hint');
+      const stim = document.getElementById('stimulus-text');
+      const startBtn = document.getElementById('start-trial-btn');
+      const progBar = document.getElementById('session-progress-bar');
+      const resCard = document.getElementById('session-results-card');
+
+      if (resCard) resCard.classList.add('hidden');
+      sessionActive = false;
+
+      if (mode === 'flanker') {
+        flankerBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-teal-600 text-white shadow-md transition touch-pad';
+        mathBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
+        sessionBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-100 text-purple-800 border-2 border-purple-300 hover:bg-purple-200 transition touch-pad flex items-center gap-1.5 shadow-sm';
+        if (progBar) progBar.classList.add('hidden');
+        labelF.textContent = 'חץ שמאלה';
+        labelJ.textContent = 'חץ ימינה';
+        hint.textContent = 'הגיבו לחץ המרכזי בלבד (התעלמו מהסובבים)';
+        stim.textContent = '← ← → ← ←';
+        startBtn.textContent = 'התחל צעד פלנקר (Space)';
+      } 
+      else if (mode === 'math') {
+        mathBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-pink-600 text-white shadow-md transition touch-pad';
+        flankerBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
+        sessionBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-100 text-purple-800 border-2 border-purple-300 hover:bg-purple-200 transition touch-pad flex items-center gap-1.5 shadow-sm';
+        if (progBar) progBar.classList.add('hidden');
+        labelF.textContent = 'שגוי';
+        labelJ.textContent = 'נכון';
+        hint.textContent = 'בדקו האם התרגיל והתוצאה נכונים או שגויים';
+        stim.textContent = '7 + 3 = 10';
+        startBtn.textContent = 'התחל צעד חשבון (Space)';
+      }
+      else if (mode === 'session') {
+        sessionBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-600 text-white shadow-md transition touch-pad flex items-center gap-1.5';
+        flankerBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
+        mathBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
+        if (progBar) progBar.classList.remove('hidden');
+        labelF.textContent = 'חץ שמאלה / שגוי';
+        labelJ.textContent = 'חץ ימינה / נכון';
+        hint.textContent = 'סשן ניסוי 3: 4 צעדי פלנקר ולאחר מכן 2 תרגילי חשבון!';
+        stim.textContent = 'מוכנים לסשן המשולב?';
+        startBtn.textContent = 'התחל סשן 6 צעדים ⚡';
+        sessionStepIndex = 0;
+        sessionResults = [];
+        updateSessionProgressBar();
+      }
+
+      trialActive = false;
+      document.getElementById('feedback-msg').textContent = "לחצו על 'התחל צעד' כדי להתחיל במדידה";
+      document.getElementById('feedback-msg').className = 'h-6 mt-3 text-xs sm:text-sm font-bold text-slate-500';
+    }
+
+    function updateSessionProgressBar() {
+      const stepCounter = document.getElementById('session-step-counter');
+      const stepType = document.getElementById('session-step-type');
+      const fill = document.getElementById('session-progress-fill');
+      if (!stepCounter || !stepType || !fill) return;
+
+      const stepNum = Math.min(sessionStepIndex + 1, 6);
+      stepCounter.textContent = `צעד ${stepNum} מתוך 6`;
+      if (sessionStepIndex < 6) {
+        stepType.textContent = sessionSequence[sessionStepIndex].label;
+      }
+      fill.style.width = `${Math.round((stepNum / 6) * 100)}%`;
+    }
+
+    function startTrial() {
+      getAudioContext();
+      const stim = document.getElementById('stimulus-text');
+      const feedback = document.getElementById('feedback-msg');
+      const startBtn = document.getElementById('start-trial-btn');
+
+      if (currentMode === 'session') {
+        sessionActive = true;
+        if (sessionStepIndex >= 6) {
+          restartSession();
+          return;
+        }
+      }
+
+      let currentTrialData = null;
+      if (currentMode === 'session') {
+        currentTrialData = sessionSequence[sessionStepIndex];
+        updateSessionProgressBar();
+        if (currentTrialData.type === 'flanker') {
+          document.getElementById('instruction-hint').textContent = 'מטלת פלנקר (הגיבו לחץ המרכזי: J ימינה, F שמאלה)';
+          document.getElementById('label-key-f').textContent = 'חץ שמאלה';
+          document.getElementById('label-key-j').textContent = 'חץ ימינה';
+        } else {
+          document.getElementById('instruction-hint').textContent = 'מטלת חשבון (האם התרגיל נכון? J נכון, F שגוי)';
+          document.getElementById('label-key-f').textContent = 'שגוי';
+          document.getElementById('label-key-j').textContent = 'נכון';
+        }
+      } else {
+        const pool = currentMode === 'flanker' ? flankerPool : mathPool;
+        currentTrialData = pool[Math.floor(Math.random() * pool.length)];
+      }
+
+      stim.textContent = '+';
+      stim.className = 'text-4xl sm:text-6xl font-black font-mono tracking-widest text-slate-400 min-h-[70px] flex items-center justify-center animate-pulse';
+      feedback.textContent = 'התכוננו לגירוי...';
+      feedback.className = 'h-6 mt-3 text-xs sm:text-sm font-bold text-slate-400';
+      startBtn.disabled = true;
+
+      setTimeout(() => {
+        stim.textContent = currentTrialData.text;
+        stim.className = 'text-4xl sm:text-6xl font-black font-mono tracking-widest text-slate-900 min-h-[70px] flex items-center justify-center scale-105 transition-all';
+        setTimeout(() => stim.classList.remove('scale-105'), 120);
+
+        expectedKey = currentTrialData.key;
+        trialStartTime = performance.now();
+        trialActive = true;
+        
+        feedback.textContent = 'הגיבו עכשיו! (F או J)';
+        feedback.className = 'h-6 mt-3 text-xs sm:text-sm font-extrabold text-teal-600 animate-pulse';
+      }, 300);
+    }
+
+    function handleTrialResponse(key) {
+      const feedback = document.getElementById('feedback-msg');
+      const startBtn = document.getElementById('start-trial-btn');
+
+      if (!trialActive) {
+        feedback.textContent = 'לחצו תחילה על כפתור ההפעלה למטה כדי להתחיל צעד!';
+        feedback.className = 'h-6 mt-3 text-xs sm:text-sm font-bold text-amber-600';
+        return;
+      }
+
+      trialActive = false;
+      const rt = Math.round(performance.now() - trialStartTime);
+      const isCorrect = key.toUpperCase() === expectedKey;
+      const rtBadge = document.getElementById('live-rt');
+      startBtn.disabled = false;
+
+      rtBadge.textContent = `זמן תגובה: ${rt} ms`;
+
+      if (isCorrect) {
+        playCorrectSound();
+        feedback.textContent = `מדויק! זמן תגובה: ${rt} מילי-שניות`;
+        feedback.className = 'h-6 mt-3 text-xs sm:text-sm font-extrabold text-emerald-600';
+      } else {
+        playWrongSound();
+        feedback.textContent = `שגוי • ${rt} ms`;
+        feedback.className = 'h-6 mt-3 text-xs sm:text-sm font-extrabold text-rose-600';
+      }
+
+      if (currentMode === 'session' && sessionActive) {
+        const stepDef = sessionSequence[sessionStepIndex];
+        sessionResults.push({
+          index: sessionStepIndex,
+          type: stepDef.type,
+          rt: rt,
+          correct: isCorrect
+        });
+
+        sessionStepIndex++;
+
+        if (sessionStepIndex < 6) {
+          startBtn.textContent = `לצעד הבא (${sessionStepIndex + 1}/6)`;
+          setTimeout(() => {
+            if (currentMode === 'session') {
+              startTrial();
+            }
+          }, 550);
+        } else {
+          finishSessionCalculations();
+        }
+      }
+    }
+
+    function finishSessionCalculations() {
+      sessionActive = false;
+      const resCard = document.getElementById('session-results-card');
+      const repeatEl = document.getElementById('sc-repeat-rt');
+      const switchEl = document.getElementById('sc-switch-rt');
+      const diffEl = document.getElementById('sc-diff-rt');
+      const badgeEl = document.getElementById('sc-user-score-badge');
+      const insightEl = document.getElementById('sc-insight-text');
+
+      const flankers = sessionResults.filter(r => r.type === 'flanker' && r.correct);
+      const maths = sessionResults.filter(r => (r.type === 'math_repeat' || r.type === 'math_switch') && r.correct);
+
+      const avgFlanker = flankers.length > 0 
+        ? Math.round(flankers.reduce((a, b) => a + b.rt, 0) / flankers.length) 
+        : 550;
+
+      const avgMath = maths.length > 0 
+        ? Math.round(maths.reduce((a, b) => a + b.rt, 0) / maths.length) 
+        : 780;
+
+      const switchCost = avgMath - avgFlanker;
+
+      if (repeatEl) repeatEl.textContent = `${avgFlanker} ms`;
+      if (switchEl) switchEl.textContent = `${avgMath} ms`;
+      if (diffEl) diffEl.textContent = `${switchCost > 0 ? '+' : ''}${switchCost} ms`;
+      if (badgeEl) badgeEl.textContent = `SC: ${switchCost > 0 ? '+' : ''}${switchCost} ms`;
+
+      if (insightEl) {
+        insightEl.innerHTML = `<strong>תוצאת ניסוי 3 המשולב (Interleaved):</strong> המעבר מ-4 צעדי פלנקר (אינהיביציה) אל תרגילי החשבון הניב זמן ממוצע של <span class="font-bold text-purple-900 font-mono">${avgMath} ms</span> בהשוואה למוקד הפלנקר (${avgFlanker} ms). זה מדגים בדיוק את המעבר הקוגניטיבי שנבדק במעבדה!`;
+      }
+
+      if (resCard) {
+        resCard.classList.remove('hidden');
+        resCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function restartSession() {
+      sessionStepIndex = 0;
+      sessionResults = [];
+      const resCard = document.getElementById('session-results-card');
+      if (resCard) resCard.classList.add('hidden');
+      document.getElementById('start-trial-btn').textContent = 'התחל סשן 6 צעדים ⚡';
+      startTrial();
+    }
+
+    // Keyboard Listener
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.key === ' ') {
+        const modalP = document.getElementById('poster-modal');
+        const modalQ = document.getElementById('qr-modal');
+        const isModalOpen = (modalP && !modalP.classList.contains('hidden')) || (modalQ && !modalQ.classList.contains('hidden'));
+        if (!isModalOpen) {
+          e.preventDefault();
+          startTrial();
+        }
+        return;
+      }
+
+      if (e.code === 'KeyF' || e.key === 'f' || e.key === 'F' || e.key === 'כ') {
+        e.preventDefault();
+        handleTrialResponse('F');
+      } 
+      else if (e.code === 'KeyJ' || e.key === 'j' || e.key === 'J' || e.key === 'ח') {
+        e.preventDefault();
+        handleTrialResponse('J');
+      } 
+      else if (e.key === 'Escape') {
+        closePosterModal();
+        closeQrModal();
+        toggleNavDrawer(false);
+      }
+    });
+
+    // Poster Modal Control
+    function openPosterModal() {
+      const modal = document.getElementById('poster-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closePosterModal() {
+      const modal = document.getElementById('poster-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    // QR Modal Control
+    function openQrModal() {
+      const modal = document.getElementById('qr-modal');
+      const currentUrl = window.location.href.includes('http') ? window.location.href : 'https://alonim-research.pages.dev';
+      const qrImg = document.getElementById('qr-image');
+      if (qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(currentUrl)}&color=0f172a&bgcolor=f8fafc`;
+      }
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeQrModal() {
+      const modal = document.getElementById('qr-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function copySiteLink() {
+      const url = window.location.href.includes('http') ? window.location.href : 'https://alonim-research.pages.dev';
+      const btn = document.getElementById('copy-link-btn');
+      
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          if (btn) btn.innerHTML = '<span>✅ הקישור הועתק!</span>';
+          setTimeout(() => { if (btn) btn.innerHTML = '<span>🔗 העתקת קישור לאתר</span>'; }, 2000);
+        }).catch(() => fallbackCopy(url, btn));
+      } else {
+        fallbackCopy(url, btn);
+      }
+    }
+
+    function fallbackCopy(text, btn) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        if (btn) btn.innerHTML = '<span>✅ הקישור הועתק!</span>';
+        setTimeout(() => { if (btn) btn.innerHTML = '<span>🔗 העתקת קישור לאתר</span>'; }, 2000);
+      } catch (err) {}
+      document.body.removeChild(ta);
+    }
+
+    // Gorilla Journey Slider Control with Vector SVG Showcase
+    function setSemesterView(sem) {
+      const btnA = document.getElementById('sem-btn-a');
+      const btnB = document.getElementById('sem-btn-b');
+      const slideA = document.getElementById('slide-sem-a');
+      const slideB = document.getElementById('slide-sem-b');
+      if (!btnA || !btnB || !slideA || !slideB) return;
+
+      if (sem === 'a') {
+        btnA.className = 'px-5 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm bg-rose-500 text-white shadow-md transition touch-pad';
+        btnB.className = 'px-5 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
+        slideA.classList.remove('hidden');
+        slideB.classList.add('hidden');
+      } else {
+        btnB.className = 'px-5 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm bg-emerald-600 text-white shadow-md transition touch-pad';
+        btnA.className = 'px-5 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
+        slideB.classList.remove('hidden');
+        slideA.classList.add('hidden');
+      }
+    }
+
+    // Right-Side Navigation Drawer Toggle Logic
+    let isDrawerOpen = false;
+    function toggleNavDrawer(forceState = null) {
+      isDrawerOpen = forceState !== null ? forceState : !isDrawerOpen;
+      const drawer = document.getElementById('nav-drawer');
+      const backdrop = document.getElementById('nav-drawer-backdrop');
+
+      if (!drawer || !backdrop) return;
+
+      if (isDrawerOpen) {
+        backdrop.classList.remove('opacity-0', 'pointer-events-none');
+        backdrop.classList.add('opacity-100', 'pointer-events-auto');
+        drawer.classList.remove('translate-x-full');
+        drawer.classList.add('translate-x-0');
+      } else {
+        backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+        backdrop.classList.add('opacity-0', 'pointer-events-none');
+        drawer.classList.remove('translate-x-0');
+        drawer.classList.add('translate-x-full');
+      }
+    }
+
+    // Floating Back to Top Button Logic
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    window.addEventListener('scroll', () => {
+      const topBtn = document.getElementById('back-to-top-btn');
+      if (!topBtn) return;
+
+      if (window.scrollY > 300) {
+        topBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+        topBtn.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+      } else {
+        topBtn.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+        topBtn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+      }
+    }, { passive: true });
+  </script>
+</body>
+</html>

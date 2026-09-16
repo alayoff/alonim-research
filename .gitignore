@@ -1,0 +1,12 @@
+node_modules/
+.tw.out.css
+tw.css
+
+# תוצרי בדיקה בלבד — תמונות תוכן של הפרויקט כן נכנסות ל-Git
+shot-*.png
+crop-*.png
+qr-only.png
+
+*.log
+.DS_Store
+Thumbs.db

@@ -42,6 +42,15 @@
       box-shadow: 0 2px 0 rgba(0,0,0,0.15);
     }
 
+    /* גירוי הפלנקר/חשבון — גודל וריווח נזילים (fluid) כדי שהכל תמיד יישאר בשורה אחת,
+       גם בטלפונים צרים, כך שהחץ/הסימן האמצעי אכן יושב במרכז הגיאומטרי של השורה.
+       ה-clamp מתכנס לגודל הקבוע הישן (3.75rem / tracking-widest) ברוחבי מסך גדולים. */
+    .stimulus-fluid {
+      white-space: nowrap;
+      font-size: clamp(1.3rem, 7vw, 3.75rem);
+      letter-spacing: clamp(0em, 1vw, 0.1em);
+    }
+
     /* פס ההחלקה בין הסמסטרים — מעוצב ידנית כדי לעבוד זהה בכל הדפדפנים */
     .semester-range {
       -webkit-appearance: none;
@@ -550,7 +559,7 @@
             הגיבו לחץ המרכזי בלבד (התעלמו מהסובבים)
           </div>
           
-          <div id="stimulus-text" dir="ltr" style="direction: ltr !important; unicode-bidi: isolate;" class="text-4xl sm:text-6xl font-black font-mono tracking-widest text-slate-900 min-h-[70px] flex items-center justify-center transition-all">→ ← → → ←</div>
+          <div id="stimulus-text" dir="ltr" style="direction: ltr !important; unicode-bidi: isolate;" class="stimulus-fluid font-black font-mono text-slate-900 min-h-[70px] flex items-center justify-center transition-all">→ ← → → ←</div>
 
           <div id="feedback-msg" class="h-6 mt-3 text-xs sm:text-sm font-extrabold text-teal-600 animate-pulse">לחצו על 'התחל צעד' כדי להתחיל</div>
         </div>
@@ -1031,14 +1040,14 @@
       }
 
       stim.textContent = '+';
-      stim.className = 'text-4xl sm:text-6xl font-black font-mono tracking-widest text-slate-400 min-h-[70px] flex items-center justify-center animate-pulse';
+      stim.className = 'stimulus-fluid font-black font-mono text-slate-400 min-h-[70px] flex items-center justify-center animate-pulse';
       feedback.textContent = 'התכוננו לגירוי...';
       feedback.className = 'h-6 mt-3 text-xs sm:text-sm font-bold text-slate-400';
       startBtn.disabled = true;
 
       setTimeout(() => {
         stim.textContent = currentTrialData.text;
-        stim.className = 'text-4xl sm:text-6xl font-black font-mono tracking-widest text-slate-900 min-h-[70px] flex items-center justify-center scale-105 transition-all';
+        stim.className = 'stimulus-fluid font-black font-mono text-slate-900 min-h-[70px] flex items-center justify-center scale-105 transition-all';
         setTimeout(() => stim.classList.remove('scale-105'), 120);
 
         expectedKey = currentTrialData.key;

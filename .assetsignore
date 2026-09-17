@@ -1,0 +1,20 @@
+# קבצים שלא צריכים להיות חלק מהאתר המפורס (Cloudflare Workers Assets)
+# בלי הקובץ הזה, wrangler מעלה את כל תיקיית הריפו כאסטים — כולל node_modules
+# שנוצר מחדש בזמן ה-build ומכיל קבצים גדולים מ-25MB (workerd), מה שגורם לכשל הפריסה.
+node_modules
+.git
+.github
+src
+build.mjs
+qr.js
+test.mjs
+package.json
+package-lock.json
+tailwind.config.js
+src.css
+.tw.out.css
+README.md
+.gitignore
+.assetsignore
+wrangler.jsonc
+*.log

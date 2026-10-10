@@ -1,0 +1,11 @@
+# כותרות אבטחה ל-Cloudflare Workers Assets (ר' https://developers.cloudflare.com/workers/static-assets/headers/)
+# התחביר: נתיב, ואז שורות "שם-כותרת: ערך" מוזחות מתחתיו — חל על כל הדפים (/*).
+# ה-CSP כאן תואם ל"אפס בקשות רשת חיצוניות" של הפרויקט: 'self' בלבד, בלי שום
+# דומיין חיצוני — כך שגם אם בטעות ייכנס קוד שמנסה לקרוא למשאב חיצוני, הדפדפן
+# יחסום אותו, לא רק ה-build script.
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+  Permissions-Policy: geolocation=(), microphone=(), camera=()

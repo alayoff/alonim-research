@@ -22,10 +22,16 @@ const MIME = {
   '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml',
 };
 
+// סופר כמה בקשות HTTP *אמיתיות* (שהגיעו בפועל לשרת, לא רק "בקשה" בצד
+// הדפדפן שה-SW סיפק מהמטמון) מגיעות לקבצי אייקון — משמש לבדיקת QA #9
+// (ראו למטה): ניווט-עוגן בעמוד לא אמור לייצר תעבורת-רשת אמיתית לאייקון.
+let iconServerHits = 0;
+
 const server = http.createServer(async (req, res) => {
   try {
     let p = decodeURIComponent(req.url.split('?')[0]);
     if (p === '/') p = '/index.html';
+    if (p.includes('/assets/icons/')) iconServerHits++;
     const file = path.join(ROOT, p);
     if (!file.startsWith(ROOT)) { res.writeHead(403); return res.end(); }
     const data = await readFile(file);
@@ -76,6 +82,21 @@ const cacheState = await page.evaluate(async () => {
   return { cacheNames: keys, count: entries.length, entries };
 });
 ok(cacheState.count >= 5, `המטמון מכיל את נכסי הליבה (${cacheState.count} פריטים: ${cacheState.entries.join(', ')})`);
+
+// --- Regression QA #9: ניווט-עוגן בעמוד לא צורך תעבורת-רשת לאייקון ---
+// (אומת שהדפדפן "מרענן" את הפייביקון בעצמו בכל שינוי hash/pushState, גם בלי
+// קשר לקליק על קישור. לכן ה-SW מגיש קבצי אייקון ישירות מהמטמון בלי
+// revalidation — התיקון נבדק כאן ברמת התעבורה האמיתית לשרת, לא רק ברמת
+// "בקשה" שהדפדפן מדווח עליה לדף.)
+const iconHitsBeforeNav = iconServerHits;
+await page.evaluate(() => {
+  history.pushState(null, '', '#journey');
+  history.pushState(null, '', '#theory');
+  history.pushState(null, '', '#experiments');
+});
+await page.waitForTimeout(500);
+ok(iconServerHits === iconHitsBeforeNav,
+   `ניווט-עוגן חוזר (3 שינויי hash) לא גרם לשום בקשת-רשת אמיתית לאייקון לשרת (${iconServerHits - iconHitsBeforeNav} בקשות חדשות)`);
 
 // --- כיבוי רשת מוחלט (סימולציה של "בלי Wi-Fi ובלי סלולר") ---
 await ctx.setOffline(true);

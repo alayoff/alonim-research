@@ -95,6 +95,58 @@ const res2 = await page.evaluate(() => ({
 }));
 ok(res2.resultsLen === 6 && !res2.cardHidden, `סשן שני, בתוך אותו טעינת-עמוד, מסתיים תקין (${res2.resultsLen}/6 צעדים)`);
 
+// --- Regression: מניעת ריצה כפולה (race condition) ב-startTrial ---
+// (קריאה כפולה/מהירה ל-startTrial — למשל לחיצה כפולה מקרית — הייתה פותחת
+// שני טיימרים במקביל, והטיימר השני דורס את מצב הראשון. התיקון: guard לפי
+// trialActive/pendingTrialTimer בכניסה לפונקציה.)
+await page.click('#mode-flanker-btn'); await page.waitForTimeout(200);
+const raceCheck = await page.evaluate(() => {
+  startTrial();
+  const firstTimer = pendingTrialTimer;
+  startTrial(); // קריאה שנייה מיידית — חייבת להיחסם ע"י ה-guard
+  return { firstTimer, timerUnchanged: pendingTrialTimer === firstTimer };
+});
+ok(raceCheck.firstTimer !== null && raceCheck.timerUnchanged,
+   'קריאה כפולה ל-startTrial לא פותחת טיימר שני (ה-timer הראשון נשאר ללא שינוי)');
+await page.waitForTimeout(400); // מניחים לטיימר הראשון לפתוח את הגירוי בפועל
+await page.keyboard.press('f'); // סוגרים את הטריאל (לא משנה אם התשובה נכונה — רק ניקוי מצב)
+await page.waitForTimeout(300);
+
+// --- Regression: מעבר מצב (setLabMode) באמצע טריאל ממתין מבטל אותו ---
+// (באג state-desync: החלפת מצב באמצע ה-"+" שלפני הגירוי השאירה טיימר ישן
+// פעיל ברקע, שדרס את המצב החדש כשההתראה שלו הגיעה.)
+const modeSwitchCancel = await page.evaluate(() => {
+  startTrial();
+  const hadPendingTimer = pendingTrialTimer !== null;
+  setLabMode('math');
+  return { hadPendingTimer, pendingAfterSwitch: pendingTrialTimer, trialActiveAfterSwitch: trialActive, modeAfterSwitch: currentMode };
+});
+ok(modeSwitchCancel.hadPendingTimer && modeSwitchCancel.pendingAfterSwitch === null && !modeSwitchCancel.trialActiveAfterSwitch,
+   `מעבר מצב באמצע טריאל ממתין מבטל אותו (pendingTimer=${modeSwitchCancel.pendingAfterSwitch}, trialActive=${modeSwitchCancel.trialActiveAfterSwitch})`);
+ok(modeSwitchCancel.modeAfterSwitch === 'math', `המעבר למצב החדש בוצע בפועל (${modeSwitchCancel.modeAfterSwitch})`);
+await page.click('#mode-flanker-btn'); await page.waitForTimeout(200); // חזרה למצב נקי להמשך הבדיקות
+
+// --- Regression: עזיבת הטאב (visibilitychange) באמצע טריאל פעיל מבטלת אותו ---
+// (ללא זה, RT נמדד כולל את כל משך ההיעדרות מהטאב — נתון פגום בלי סימון.)
+const hiddenCancel = await page.evaluate(() => new Promise((resolve) => {
+  startTrial();
+  setTimeout(() => { // מניחים לגירוי בפועל להופיע (trialActive=true)
+    Object.defineProperty(document, 'hidden', { value: true, configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+    resolve({
+      trialActive,
+      pendingTrialTimer,
+      feedbackText: document.getElementById('feedback-msg').textContent,
+      startBtnDisabled: document.getElementById('start-trial-btn').disabled,
+    });
+  }, 350);
+}));
+ok(!hiddenCancel.trialActive && hiddenCancel.pendingTrialTimer === null,
+   `עזיבת הטאב באמצע טריאל פעיל מבטלת אותו (trialActive=${hiddenCancel.trialActive})`);
+ok(hiddenCancel.feedbackText.includes('בוטל') && !hiddenCancel.startBtnDisabled,
+   `מוצגת הודעה שהצעד בוטל, וכפתור "התחל צעד" חזר לפעיל (הודעה: "${hiddenCancel.feedbackText}")`);
+await page.evaluate(() => Object.defineProperty(document, 'hidden', { value: false, configurable: true }));
+
 // --- semester slider (סמסטר א' ➔ ב') ---
 await page.evaluate(() => document.getElementById('gorilla-journey-slider').scrollIntoView());
 await page.waitForTimeout(1300);
@@ -155,7 +207,28 @@ await page.click('#hamburger-btn'); await page.waitForTimeout(450);
 ok(await page.evaluate(() => !document.getElementById('nav-drawer').classList.contains('translate-x-full')), 'תפריט המבורגר נפתח');
 ok(await page.evaluate(() => { const d = document.getElementById('nav-drawer').getBoundingClientRect();
     return Math.abs(d.right - window.innerWidth) < 4; }), 'המגירה עוגנת לצד ימין (RTL)');
+
+// --- Regression: focus-trap במגירת הניווט ---
+// (בלי focus-trap, Tab "בורח" מהמגירה הפתוחה לאלמנטים חבויים מאחוריה —
+// מבחינת מי שמנווט במקלדת, זו ניווט בלתי-צפוי לתוכן שהוא לא יכול לראות.)
+ok(await page.evaluate(() => document.getElementById('nav-drawer').contains(document.activeElement)),
+   'בפתיחת המגירה, המיקוד עובר לאלמנט הראשון בתוכה');
+const drawerTrap = await page.evaluate(() => {
+  const drawer = document.getElementById('nav-drawer');
+  const items = Array.from(drawer.querySelectorAll('a[href], button:not([disabled])')).filter(el => el.offsetParent !== null);
+  items[0].focus();
+  return { count: items.length };
+});
+await page.keyboard.press('Shift+Tab'); // מהראשון, אחורה — חייב לעגל לאחרון
+const wrappedToLast = await page.evaluate(() => {
+  const drawer = document.getElementById('nav-drawer');
+  const items = Array.from(drawer.querySelectorAll('a[href], button:not([disabled])')).filter(el => el.offsetParent !== null);
+  return document.activeElement === items[items.length - 1];
+});
+ok(drawerTrap.count > 1 && wrappedToLast, `Shift+Tab מהפריט הראשון במגירה מעגל לפריט האחרון (${drawerTrap.count} פריטים)`);
 await page.keyboard.press('Escape'); await page.waitForTimeout(400);
+ok(await page.evaluate(() => document.activeElement && document.activeElement.id === 'hamburger-btn'),
+   'סגירת המגירה (Escape) מחזירה את המיקוד לכפתור ההמבורגר');
 
 // יוצאים ממצב סשן (סוגר את כרטיס התוצאות) לפני בדיקת הכפתור הצף הרגילה —
 // כל עוד כרטיס התוצאות גלוי, הכפתור הצף מוסתר בכוונה (ר' הבדיקה למעלה).
@@ -172,7 +245,18 @@ const qr = await page.evaluate(() => { const e = document.getElementById('qr-ima
 ok(qr.tag === 'svg' && qr.w > 100, `QR נוצר בזמן ריצה כ-SVG (${qr.tag}, ${Math.round(qr.w)}px)`);
 ok(qr.label === 'QR code ' + qr.url, `ה-QR מקודד את הכתובת הנוכחית (${qr.url})`);
 await page.screenshot({ path: 'shot-qr.png' });
+
+// --- Regression: focus-trap במודאל ה-QR (אותה בעיה כמו במגירה, ר' לעיל) ---
+ok(await page.evaluate(() => document.getElementById('qr-modal').contains(document.activeElement)),
+   'בפתיחת מודאל ה-QR, המיקוד עובר לאלמנט בתוכו');
 await page.keyboard.press('Escape'); await page.waitForTimeout(300);
+ok(await page.evaluate(() => document.activeElement && document.activeElement.matches('button[onclick="openQrModal()"]')),
+   'סגירת מודאל ה-QR (Escape) מחזירה את המיקוד לכפתור שפתח אותו');
+
+// הערה: בדיקת "קליק על קישור-עוגן לא צורך תעבורת-רשת לאייקון" (QA #9) לא
+// רלוונטית כאן — העמוד הזה נטען מ-file://, כך שאין Service Worker פעיל
+// בכלל (SW דורש origin אמיתי) ולכן אין מטמון-ברקע לבדוק. הבדיקה הזו נמצאת
+// ב-test-offline.mjs, שמריץ שרת http מקומי אמיתי עם ה-SW פעיל.
 
 // horizontal overflow check
 ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),

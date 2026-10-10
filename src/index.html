@@ -6,6 +6,20 @@
   <meta name="description" content="הקשר בין אינהיביציה לשטף מתמטי — פרויקט מחקר בתוכנית המצוינות אלונים, המרכז האקדמי רופין. בהנחיית ד״ר ירדן גליקסמן.">
   <meta name="theme-color" content="#0d9488">
   <title>הקשר בין אינהיביציה לשטף מתמטי | פרויקט מחקר - תוכנית אלונים</title>
+  <link rel="canonical" href="https://alonim-research.chuk-app.workers.dev/">
+
+  <!-- תגיות שיתוף: כך ייראה הקישור כשהוא משותף בוואטסאפ/פייסבוק/טוויטר,
+       במקום כותרת/טקסט גנרי של הדפדפן בלי תמונה. -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="הקשר בין אינהיביציה לשטף מתמטי | פרויקט מחקר - תוכנית אלונים">
+  <meta property="og:description" content="הקשר בין אינהיביציה לשטף מתמטי — פרויקט מחקר בתוכנית המצוינות אלונים, המרכז האקדמי רופין. בהנחיית ד״ר ירדן גליקסמן.">
+  <meta property="og:image" content="https://alonim-research.chuk-app.workers.dev/assets/icons/icon-512.png">
+  <meta property="og:url" content="https://alonim-research.chuk-app.workers.dev/">
+  <meta property="og:locale" content="he_IL">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="הקשר בין אינהיביציה לשטף מתמטי | פרויקט מחקר - תוכנית אלונים">
+  <meta name="twitter:description" content="הקשר בין אינהיביציה לשטף מתמטי — פרויקט מחקר בתוכנית המצוינות אלונים, המרכז האקדמי רופין.">
+  <meta name="twitter:image" content="https://alonim-research.chuk-app.workers.dev/assets/icons/icon-512.png">
 
   <!--
     PWA: מניפסט + אייקון + Service Worker (ראו service-worker.js) —
@@ -136,12 +150,12 @@
       
       <!-- Right Side Actions (Hamburger, QR) -->
       <div class="flex items-center gap-2">
-        <button type="button" onclick="openQrModal()" class="px-3 py-2 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-800 font-extrabold text-xs transition flex items-center gap-1.5 border border-purple-200 shadow-sm touch-pad">
+        <button type="button" onclick="openQrModal()" class="px-3 py-2.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-800 font-extrabold text-xs transition flex items-center gap-1.5 border border-purple-200 shadow-sm touch-pad">
           <span>📱</span>
           <span class="hidden sm:inline">QR לסריקה</span>
         </button>
         <!-- Hamburger Menu Button (Right Side) -->
-        <button type="button" id="hamburger-btn" onclick="toggleNavDrawer()" aria-label="פתח תפריט ניווט" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center transition border border-slate-200 shadow-sm touch-pad">
+        <button type="button" id="hamburger-btn" onclick="toggleNavDrawer()" aria-label="פתח תפריט ניווט" aria-haspopup="true" aria-expanded="false" aria-controls="nav-drawer" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center transition border border-slate-200 shadow-sm touch-pad">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
@@ -165,11 +179,11 @@
   <!-- Side Navigation Drawer (Right Side) -->
   <div id="nav-drawer-backdrop" onclick="toggleNavDrawer(false)" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300"></div>
 
-  <aside id="nav-drawer" class="fixed top-0 right-0 bottom-0 z-50 w-80 max-w-[85vw] bg-white/95 backdrop-blur-xl shadow-2xl border-l border-slate-200 p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-out select-none">
+  <aside id="nav-drawer" role="dialog" aria-modal="true" aria-label="תפריט ניווט" class="fixed top-0 right-0 bottom-0 z-50 w-80 max-w-[85vw] bg-white/95 backdrop-blur-xl shadow-2xl border-l border-slate-200 p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-out select-none">
     <div class="space-y-6">
       
       <div class="flex items-center justify-between border-b border-slate-200 pb-4">
-        <button type="button" onclick="toggleNavDrawer(false)" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 font-bold flex items-center justify-center transition touch-pad">
+        <button type="button" id="nav-drawer-close-btn" onclick="toggleNavDrawer(false)" aria-label="סגירת תפריט הניווט" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800 font-bold flex items-center justify-center transition touch-pad">
           ✕
         </button>
         <div class="flex items-center gap-2.5 text-right">
@@ -267,10 +281,10 @@
 
         <div class="glass-card px-4 py-2.5 rounded-2xl flex items-center gap-3 shadow-sm border border-sky-100">
           <div class="w-8 h-8 rounded-full bg-sky-100 text-sky-700 font-bold flex items-center justify-center text-xs">
-            ד"ר
+            ד״ר
           </div>
           <div class="text-right">
-            <span class="block font-bold text-slate-900">ד"ר ירדן גליקסמן</span>
+            <span class="block font-bold text-slate-900">ד״ר ירדן גליקסמן</span>
             <span class="text-slate-500 text-xs">מנחה אקדמית • פסיכולוגיה קוגניטיבית</span>
           </div>
         </div>
@@ -414,7 +428,7 @@
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <span class="px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-xs font-black">ניסוי 1 • מתאמי (Correlational)</span>
-              <span class="text-xs font-bold text-slate-400">Baseline Study</span>
+              <span class="text-xs font-bold text-slate-600">Baseline Study</span>
             </div>
 
             <h3 class="text-xl font-extrabold text-slate-900 font-display">קשר בסיסי בין יכולות</h3>
@@ -543,13 +557,13 @@
 
         <!-- Mode Selector -->
         <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-4">
-          <button type="button" id="mode-flanker-btn" onclick="setLabMode('flanker')" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-teal-600 text-white shadow-md transition touch-pad">
+          <button type="button" id="mode-flanker-btn" onclick="setLabMode('flanker')" class="px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-teal-600 text-white shadow-md transition touch-pad">
             🏹 פלנקר (אינהיביציה)
           </button>
-          <button type="button" id="mode-math-btn" onclick="setLabMode('math')" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad">
+          <button type="button" id="mode-math-btn" onclick="setLabMode('math')" class="px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad">
             🔢 אימות חשבון (בודד)
           </button>
-          <button type="button" id="mode-session-btn" onclick="setLabMode('session')" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-100 text-purple-800 border-2 border-purple-300 hover:bg-purple-200 transition touch-pad flex items-center gap-1.5 shadow-sm">
+          <button type="button" id="mode-session-btn" onclick="setLabMode('session')" class="px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-100 text-purple-800 border-2 border-purple-300 hover:bg-purple-200 transition touch-pad flex items-center gap-1.5 shadow-sm">
             <span>⚡</span>
             <span>סשן 6 צעדים (4 פלנקר ➔ 2 חשבון)</span>
           </button>
@@ -574,7 +588,7 @@
           
           <div id="stimulus-text" dir="ltr" style="direction: ltr !important; unicode-bidi: isolate;" class="stimulus-fluid font-black font-mono text-slate-900 min-h-[70px] flex items-center justify-center transition-all">→ ← → → ←</div>
 
-          <div id="feedback-msg" class="h-6 mt-3 text-xs sm:text-sm font-extrabold text-teal-600 animate-pulse">לחצו על 'התחל צעד' כדי להתחיל</div>
+          <div id="feedback-msg" role="status" aria-live="polite" class="h-6 mt-3 text-xs sm:text-sm font-extrabold text-teal-700 animate-pulse">לחצו על 'התחל צעד' כדי להתחיל</div>
         </div>
 
         <!-- Response Touchpads (Strict LTR: F on Left, J on Right) -->
@@ -588,7 +602,7 @@
                 <span class="text-xs text-slate-400 font-bold">/ כ</span>
               </div>
               <span id="label-key-f" dir="rtl" class="text-xs sm:text-sm font-extrabold text-rose-600 mt-1">חץ שמאלה</span>
-              <span class="text-[10px] text-slate-400 mt-0.5 sm:hidden" dir="rtl">הקש כאן בנייד 📱</span>
+              <span class="text-[10px] text-slate-600 mt-0.5 sm:hidden" dir="rtl">הקש כאן בנייד 📱</span>
             </button>
 
             <!-- Key J Touchpad (Right side) -->
@@ -598,7 +612,7 @@
                 <span class="text-xs text-slate-400 font-bold">/ ח</span>
               </div>
               <span id="label-key-j" dir="rtl" class="text-xs sm:text-sm font-extrabold text-teal-600 mt-1">חץ ימינה</span>
-              <span class="text-[10px] text-slate-400 mt-0.5 sm:hidden" dir="rtl">הקש כאן בנייד 📱</span>
+              <span class="text-[10px] text-slate-600 mt-0.5 sm:hidden" dir="rtl">הקש כאן בנייד 📱</span>
             </button>
 
           </div>
@@ -750,11 +764,11 @@
                  oninput="onSemesterSlide(this.value)" onchange="snapSemester()">
 
           <div class="flex justify-between items-center text-[11px] sm:text-xs font-extrabold">
-            <button type="button" onclick="setSemesterView('a')" id="sem-btn-a" class="px-2.5 py-1 rounded-lg whitespace-nowrap text-rose-700 bg-rose-50 transition touch-pad">
+            <button type="button" onclick="setSemesterView('a')" id="sem-btn-a" class="px-2.5 py-2.5 rounded-lg whitespace-nowrap text-rose-700 bg-rose-50 transition touch-pad">
               סמסטר א' 🦍
             </button>
             <span id="sem-slide-hint" class="text-[10px] font-bold text-slate-400 animate-pulse-subtle whitespace-nowrap">גררו ↞</span>
-            <button type="button" onclick="setSemesterView('b')" id="sem-btn-b" class="px-2.5 py-1 rounded-lg whitespace-nowrap text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition touch-pad">
+            <button type="button" onclick="setSemesterView('b')" id="sem-btn-b" class="px-2.5 py-2.5 rounded-lg whitespace-nowrap text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition touch-pad">
               סמסטר ב' 🏆
             </button>
           </div>
@@ -766,19 +780,20 @@
   </main>
 
   <!-- QR Code Modal -->
-  <div id="qr-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="relative w-full max-w-sm sm:max-w-lg bg-white rounded-3xl shadow-2xl p-5 sm:p-7 text-center space-y-4 border border-slate-200">
-      
-      <div class="flex items-center justify-between border-b pb-3">
+  <div id="qr-modal" role="dialog" aria-modal="true" aria-label="סריקה מהירה בטלפון" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="relative w-full max-w-sm sm:max-w-lg bg-white rounded-3xl shadow-2xl text-center border border-slate-200 max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 z-10 bg-white flex items-center justify-between border-b pb-3 p-5 sm:p-7 !pb-3">
         <h3 class="font-extrabold text-slate-900 text-base sm:text-2xl">סריקה מהירה בטלפון</h3>
-        <button type="button" onclick="closeQrModal()" class="shrink-0 w-10 h-10 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold text-lg flex items-center justify-center transition touch-pad">
+        <button type="button" id="qr-modal-close-btn" onclick="closeQrModal()" aria-label="סגירת חלון הסריקה" class="shrink-0 w-10 h-10 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold text-lg flex items-center justify-center transition touch-pad">
           ✕
         </button>
       </div>
 
+      <div class="px-5 sm:px-7 pb-5 sm:pb-7 space-y-4">
+
       <div class="p-3 sm:p-5 bg-slate-50 rounded-2xl border flex justify-center items-center">
         <!-- ה-QR נוצר בזמן ריצה מהכתובת הנוכחית (ראו qrMatrix למטה) -->
-        <div id="qr-holder" class="w-full max-w-[11rem] sm:max-w-[24rem] aspect-square rounded-xl shadow-sm bg-white p-2 flex items-center justify-center text-xs text-slate-400">
+        <div id="qr-holder" class="w-full max-w-[11rem] sm:max-w-[24rem] aspect-square rounded-xl shadow-sm bg-white p-2 flex items-center justify-center text-xs text-slate-600">
           טוען קוד…
         </div>
       </div>
@@ -794,6 +809,7 @@
         <span>העתקת קישור לאתר</span>
       </button>
 
+      </div>
     </div>
   </div>
 
@@ -803,7 +819,7 @@
       תוכנית המצטיינים "אלונים" • הפקולטה למדעי ההתנהגות • המרכז האקדמי רופין 2026
     </div>
     <div>
-      פרויקט מחקר מאת טל אלאיוף ומאיה פילו • בהנחיית ד"ר ירדן גליקסמן
+      פרויקט מחקר מאת טל אלאיוף ומאיה פילו • בהנחיית ד״ר ירדן גליקסמן
     </div>
   </footer>
 
@@ -879,6 +895,20 @@
     let trialActive = false;
     let trialStartTime = 0;
     let expectedKey = '';
+    // ה-timeout הפעיל של startTrial (ה-"+" ואז הצגת הגירוי) — חייבים לבטל אותו
+    // בכל מקום שמפסיק/מחליף טריאל, אחרת קריאה כפולה/מהירה (או מעבר מצב תוך כדי
+    // טריאל פעיל) משאירה את ה-callback הישן פעיל ברקע ודורס את המצב החדש.
+    let pendingTrialTimer = null;
+
+    // מבטל טריאל תלוי-ועומד (אם יש) ומחזיר את התצוגה למצב "לא פעיל". קוראים לזה
+    // מכל מקום שבו טריאל פעיל צריך להיפסק באופן מיידי: מעבר מצב, או עזיבת הטאב.
+    function cancelPendingTrial() {
+      if (pendingTrialTimer !== null) {
+        clearTimeout(pendingTrialTimer);
+        pendingTrialTimer = null;
+      }
+      trialActive = false;
+    }
 
     // 6-Step Mini-Session State (Experiment 3 Interleaved: exactly 4 Flankers ➔ 2 Math Trials)
     let sessionActive = false;
@@ -949,6 +979,19 @@
     ]);
 
     function setLabMode(mode) {
+      // אם סשן באמצע ריצה כבר אסף תוצאות, לחיצה חוזרת בטעות על "סשן" לא תמחק
+      // אותן בשקט — שואלים אישור קודם (זה נכון רק כשבאמת נשארים באותו מצב
+      // "סשן" עם התקדמות קיימת; החלפה למצב אחר תמיד מותרת, ר' cancelPendingTrial).
+      if (mode === 'session' && currentMode === 'session' && sessionActive && sessionResults.length > 0) {
+        const ok = confirm('יש התקדמות בסשן הנוכחי (' + sessionResults.length + ' מתוך 6 צעדים). להתחיל סשן חדש ולמחוק את ההתקדמות?');
+        if (!ok) return;
+      }
+
+      // מבטלים כל טריאל תלוי-ועומד מהמצב הקודם (אם startTrial() היה באמצע
+      // ה-"+" fixation) לפני שמעדכנים UI למצב החדש — אחרת הגירוי שבאמת יוצג
+      // בעוד 300ms הוא עדיין מהמצב הישן, בעוד שה-UI כבר מציג את החדש.
+      cancelPendingTrial();
+
       currentMode = mode;
       const flankerBtn = document.getElementById('mode-flanker-btn');
       const mathBtn = document.getElementById('mode-math-btn');
@@ -966,9 +1009,9 @@
       sessionActive = false;
 
       if (mode === 'flanker') {
-        flankerBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-teal-600 text-white shadow-md transition touch-pad';
-        mathBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
-        sessionBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-100 text-purple-800 border-2 border-purple-300 hover:bg-purple-200 transition touch-pad flex items-center gap-1.5 shadow-sm';
+        flankerBtn.className = 'px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-teal-600 text-white shadow-md transition touch-pad';
+        mathBtn.className = 'px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
+        sessionBtn.className = 'px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-100 text-purple-800 border-2 border-purple-300 hover:bg-purple-200 transition touch-pad flex items-center gap-1.5 shadow-sm';
         if (progBar) progBar.classList.add('hidden');
         labelF.textContent = 'חץ שמאלה';
         labelJ.textContent = 'חץ ימינה';
@@ -977,9 +1020,9 @@
         startBtn.textContent = 'התחל צעד פלנקר (Space)';
       } 
       else if (mode === 'math') {
-        mathBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-pink-600 text-white shadow-md transition touch-pad';
-        flankerBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
-        sessionBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-100 text-purple-800 border-2 border-purple-300 hover:bg-purple-200 transition touch-pad flex items-center gap-1.5 shadow-sm';
+        mathBtn.className = 'px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-pink-600 text-white shadow-md transition touch-pad';
+        flankerBtn.className = 'px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
+        sessionBtn.className = 'px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-100 text-purple-800 border-2 border-purple-300 hover:bg-purple-200 transition touch-pad flex items-center gap-1.5 shadow-sm';
         if (progBar) progBar.classList.add('hidden');
         labelF.textContent = 'שגוי';
         labelJ.textContent = 'נכון';
@@ -988,9 +1031,9 @@
         startBtn.textContent = 'התחל צעד חשבון (Space)';
       }
       else if (mode === 'session') {
-        sessionBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-600 text-white shadow-md transition touch-pad flex items-center gap-1.5';
-        flankerBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
-        mathBtn.className = 'px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
+        sessionBtn.className = 'px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-600 text-white shadow-md transition touch-pad flex items-center gap-1.5';
+        flankerBtn.className = 'px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
+        mathBtn.className = 'px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad';
         if (progBar) progBar.classList.remove('hidden');
         labelF.textContent = 'חץ שמאלה / שגוי';
         labelJ.textContent = 'חץ ימינה / נכון';
@@ -1003,8 +1046,9 @@
       }
 
       trialActive = false;
+      startBtn.disabled = false;
       document.getElementById('feedback-msg').textContent = "לחצו על 'התחל צעד' כדי להתחיל במדידה";
-      document.getElementById('feedback-msg').className = 'h-6 mt-3 text-xs sm:text-sm font-bold text-slate-500';
+      document.getElementById('feedback-msg').className = 'h-6 mt-3 text-xs sm:text-sm font-bold text-slate-600';
     }
 
     function updateSessionProgressBar() {
@@ -1022,6 +1066,19 @@
     }
 
     function startTrial() {
+      // מגן תחרות: אם כבר יש טריאל פעיל (או "+" שעדיין ממתין להצגת הגירוי),
+      // מתעלמים לגמרי מהקריאה הכפולה במקום ליצור טיימר שני שדורס את הראשון.
+      // בלי זה, לחיצה כפולה/מהירה על רווח (שלא עובר דרך disabled של הכפתור,
+      // בניגוד ללחיצה על הכפתור עצמו) משבשת את ההתאמה בין הגירוי המוצג
+      // למפתח התשובה הפנימי (expectedKey) — ותגובת משתמש אמיתית נרשמת מול
+      // גירוי לא-נכון, בלי שום אזהרה. אומת ב-QA כבאג חמור.
+      if (trialActive || pendingTrialTimer !== null) return;
+      // מגן overlay: אם המיקוד "ברח" (Tab) מאחורי מגירה/מודאל פתוחים לכפתור
+      // "התחל צעד" החבוי, הפעלה שלו (למשל ע"י מקש Space) לא אמורה להתחיל
+      // טריאל שהמשתמש לא יכול לראות בכלל. הבדיקה כאן (ולא רק במאזין המקלדת
+      // הגלובלי) סוגרת את הפרצה גם עבור קליק/מגע ישיר על הכפתור החבוי.
+      if (isAnyOverlayOpen()) return;
+
       getAudioContext();
       const stim = document.getElementById('stimulus-text');
       const feedback = document.getElementById('feedback-msg');
@@ -1059,7 +1116,8 @@
       feedback.className = 'h-6 mt-3 text-xs sm:text-sm font-bold text-slate-400';
       startBtn.disabled = true;
 
-      setTimeout(() => {
+      pendingTrialTimer = setTimeout(() => {
+        pendingTrialTimer = null;
         stim.textContent = currentTrialData.text;
         stim.className = 'stimulus-fluid font-black font-mono text-slate-900 min-h-[70px] flex items-center justify-center scale-105 transition-all';
         setTimeout(() => stim.classList.remove('scale-105'), 120);
@@ -1067,7 +1125,7 @@
         expectedKey = currentTrialData.key;
         trialStartTime = performance.now();
         trialActive = true;
-        
+
         feedback.textContent = 'הגיבו עכשיו! (F או J)';
         feedback.className = 'h-6 mt-3 text-xs sm:text-sm font-extrabold text-teal-600 animate-pulse';
       }, 300);
@@ -1076,6 +1134,10 @@
     function handleTrialResponse(key) {
       const feedback = document.getElementById('feedback-msg');
       const startBtn = document.getElementById('start-trial-btn');
+
+      // ר' ההערה המקבילה ב-startTrial(): סוגרים את אותה פרצת focus-escape גם
+      // כאן, כדי שתגובה שמגיעה מכפתור F/J חבוי מאחורי עוברלי פתוח לא תירשם.
+      if (isAnyOverlayOpen()) return;
 
       if (!trialActive) {
         feedback.textContent = 'לחצו תחילה על כפתור ההפעלה למטה כדי להתחיל צעד!';
@@ -1217,6 +1279,61 @@
       return (modalQ && !modalQ.classList.contains('hidden')) || isDrawerOpen === true;
     }
 
+    /* ------------------------------------------------------------------
+       Focus trap כללי למגירת הניווט ולמודאל ה-QR.
+       בלי זה, Tab "בורח" מהעוברלי הפתוח לתוכן הדף שמתחתיו — כולל כפתורי
+       התשובה F/J החבויים — ומשתמש מקלדת/קורא-מסך מאבד את מקומו לגמרי.
+       שומר גם איזה אלמנט היה ב-focus לפני הפתיחה כדי להחזיר אליו בסגירה. */
+    let lastFocusedBeforeOverlay = null;
+    let activeFocusTrapHandler = null;
+
+    function getFocusableIn(container) {
+      if (!container) return [];
+      return Array.from(container.querySelectorAll(
+        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+      )).filter(el => el.offsetParent !== null);
+    }
+
+    function trapFocusIn(container) {
+      if (activeFocusTrapHandler) {
+        document.removeEventListener('keydown', activeFocusTrapHandler, true);
+        activeFocusTrapHandler = null;
+      }
+      lastFocusedBeforeOverlay = document.activeElement;
+      const focusables = getFocusableIn(container);
+      if (focusables.length) focusables[0].focus();
+
+      activeFocusTrapHandler = (e) => {
+        if (e.key !== 'Tab') return;
+        const items = getFocusableIn(container);
+        if (!items.length) return;
+        const first = items[0], last = items[items.length - 1];
+        if (!container.contains(document.activeElement)) {
+          e.preventDefault();
+          first.focus();
+        } else if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      };
+      document.addEventListener('keydown', activeFocusTrapHandler, true);
+    }
+
+    function releaseFocusTrap() {
+      if (activeFocusTrapHandler) {
+        document.removeEventListener('keydown', activeFocusTrapHandler, true);
+        activeFocusTrapHandler = null;
+      }
+      const toRestore = lastFocusedBeforeOverlay;
+      lastFocusedBeforeOverlay = null;
+      if (toRestore && typeof toRestore.focus === 'function' && document.body.contains(toRestore)) {
+        toRestore.focus();
+      }
+    }
+
     // האם המיקוד נמצא בשדה קלט (כדי לא לחטוף הקלדה של המשתמש)?
     function isTypingTarget(el) {
       if (!el || !el.tagName) return false;
@@ -1245,6 +1362,24 @@
       else if (e.key === 'Escape') {
         closeQrModal();
         toggleNavDrawer(false);
+      }
+    });
+
+    // עזיבת הטאב (מעבר אפליקציה/נעילת מסך/מעבר חלון) באמצע טריאל פעיל מוסיפה
+    // את כל משך ההיעדרות ל-RT הנמדד, בלי שום סימון שהנתון פגום. מבטלים את
+    // הטריאל התלוי-ועומד ברגע שהטאב מוסתר, ומזמינים ריצה חוזרת נקייה.
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && (trialActive || pendingTrialTimer !== null)) {
+        cancelPendingTrial();
+        const stim = document.getElementById('stimulus-text');
+        const feedback = document.getElementById('feedback-msg');
+        const startBtn = document.getElementById('start-trial-btn');
+        if (stim) { stim.textContent = '⏸'; stim.className = 'stimulus-fluid font-black font-mono text-slate-300 min-h-[70px] flex items-center justify-center'; }
+        if (feedback) {
+          feedback.textContent = 'הצעד בוטל כי עזבתם את הטאב — לחצו "התחל צעד" כדי לנסות שוב';
+          feedback.className = 'h-6 mt-3 text-xs sm:text-sm font-bold text-amber-600';
+        }
+        if (startBtn) startBtn.disabled = false;
       }
     });
 
@@ -1284,6 +1419,7 @@
       if (modal) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        trapFocusIn(modal);
       }
     }
 
@@ -1292,6 +1428,7 @@
       if (modal) {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+        releaseFocusTrap();
       }
     }
 
@@ -1350,9 +1487,9 @@
         badge.classList.toggle('bg-emerald-600/95', onB);
         badge.classList.toggle('bg-rose-600/95', !onB);
       }
-      if (btnA) btnA.className = 'px-2.5 py-1 rounded-lg transition touch-pad whitespace-nowrap ' +
+      if (btnA) btnA.className = 'px-2.5 py-2.5 rounded-lg transition touch-pad whitespace-nowrap ' +
         (onB ? 'text-slate-400 hover:text-rose-700 hover:bg-rose-50' : 'text-rose-700 bg-rose-50');
-      if (btnB) btnB.className = 'px-2.5 py-1 rounded-lg transition touch-pad whitespace-nowrap ' +
+      if (btnB) btnB.className = 'px-2.5 py-2.5 rounded-lg transition touch-pad whitespace-nowrap ' +
         (onB ? 'text-emerald-700 bg-emerald-50' : 'text-slate-400 hover:text-emerald-700 hover:bg-emerald-50');
 
       // רמז ההחלקה נעלם ברגע שהמשתמש הבין את הרעיון
@@ -1401,6 +1538,7 @@
       isDrawerOpen = forceState !== null ? forceState : !isDrawerOpen;
       const drawer = document.getElementById('nav-drawer');
       const backdrop = document.getElementById('nav-drawer-backdrop');
+      const hamburgerBtn = document.getElementById('hamburger-btn');
 
       if (!drawer || !backdrop) return;
 
@@ -1409,11 +1547,15 @@
         backdrop.classList.add('opacity-100', 'pointer-events-auto');
         drawer.classList.remove('translate-x-full');
         drawer.classList.add('translate-x-0');
+        if (hamburgerBtn) hamburgerBtn.setAttribute('aria-expanded', 'true');
+        trapFocusIn(drawer);
       } else {
         backdrop.classList.remove('opacity-100', 'pointer-events-auto');
         backdrop.classList.add('opacity-0', 'pointer-events-none');
         drawer.classList.remove('translate-x-0');
         drawer.classList.add('translate-x-full');
+        if (hamburgerBtn) hamburgerBtn.setAttribute('aria-expanded', 'false');
+        releaseFocusTrap();
       }
     }
 
@@ -1444,8 +1586,42 @@
     // same-origin בלבד, לא שובר את עקרון אפס-בקשות-חיצוניות.
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js').catch(() => {});
+        // אם כבר יש Service Worker פעיל על העמוד הזה, זה לא הביקור הראשון —
+        // כל "controllerchange" אחרי זה הוא עדכון אמיתי, ולא ה-claim() הראשוני
+        // שקורה בביקור הראשון-אי-פעם (ואז אין טעם להציג "גרסה חדשה").
+        const hadController = !!navigator.serviceWorker.controller;
+        navigator.serviceWorker.register('service-worker.js').then((registration) => {
+          // בודקים גרסה חדשה כבר בכל טעינה, ולא מסתמכים רק על הבדיקה
+          // האוטומטית של הדפדפן (שרצה לכל היותר פעם ב-24 שעות ברקע) — כך
+          // עדכון שפורסם מתגלה כבר בביקור הבא.
+          registration.update().catch(() => {});
+          if (hadController) {
+            navigator.serviceWorker.addEventListener('controllerchange', showUpdateNotice, { once: true });
+          }
+        }).catch(() => {});
       });
+    }
+
+    // מציג הודעה קטנה וידידותית כש-Service Worker חדש השתלט על העמוד,
+    // כדי שהמשתמש לא ייתקע על גרסה ישנה בלי לדעת שיש עדכון.
+    function showUpdateNotice() {
+      if (document.getElementById('sw-update-notice')) return;
+      const notice = document.createElement('div');
+      notice.id = 'sw-update-notice';
+      notice.setAttribute('role', 'status');
+      notice.setAttribute('aria-live', 'polite');
+      notice.className = 'fixed bottom-4 inset-x-4 sm:inset-x-auto sm:left-4 sm:max-w-sm z-50 bg-slate-900 text-white rounded-xl shadow-lg p-4 flex items-center gap-3';
+      const text = document.createElement('span');
+      text.className = 'flex-1 text-sm font-medium';
+      text.textContent = 'גרסה חדשה של האתר זמינה';
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'shrink-0 bg-teal-500 hover:bg-teal-400 text-white text-sm font-bold px-3 py-2 rounded-lg';
+      btn.textContent = 'רענון';
+      btn.addEventListener('click', () => window.location.reload());
+      notice.appendChild(text);
+      notice.appendChild(btn);
+      document.body.appendChild(notice);
     }
   </script>
 </body>

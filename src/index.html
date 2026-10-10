@@ -6,7 +6,20 @@
   <meta name="description" content="הקשר בין אינהיביציה לשטף מתמטי — פרויקט מחקר בתוכנית המצוינות אלונים, המרכז האקדמי רופין. בהנחיית ד״ר ירדן גליקסמן.">
   <meta name="theme-color" content="#0d9488">
   <title>הקשר בין אינהיביציה לשטף מתמטי | פרויקט מחקר - תוכנית אלונים</title>
-  
+
+  <!--
+    PWA: מניפסט + אייקון + Service Worker (ראו service-worker.js) —
+    לאחר ביקור ראשון מוצלח, העמוד נשמר במטמון המכשיר ונטען מיידית גם
+    ברשת סלולרית חלשה מאוד או ללא חיבור לרשת בכלל. "הוספה למסך הבית"
+    הופכת אותו לאפליקציה שנפתחת ישירות מהאייקון, שוב בלי שום תלות ברשת.
+  -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="mobile-web-app-capable" content="yes">
+
   <!--
     Tailwind מקומי ומוטמע (מקומפל מראש, רק הקלאסים שבשימוש בפועל).
     אין כאן ולו בקשת רשת אחת: אין CDN, אין Google Fonts, אין תמונות חיצוניות.
@@ -949,6 +962,7 @@
       const resCard = document.getElementById('session-results-card');
 
       if (resCard) resCard.classList.add('hidden');
+      setBackToTopSuppressed(false);
       sessionActive = false;
 
       if (mode === 'flanker') {
@@ -1111,6 +1125,25 @@
       }
     }
 
+    /* כפתור "חזרה לראש העמוד" הצף חופף/נוגע בכפתור "נסו שוב" שבתחתית כרטיס
+       התוצאות במסכי נייד צרים — בדיוק ברגע שהמשתמש אמור ללחוץ על "נסו שוב".
+       טעות הקשה שם (פוגעת בכפתור הצף במקום בכפתור נסו שוב) גורמת לתחושה
+       שה"נסו שוב" לא עובד, והפתרון האינטואיטיבי אז הוא לרענן את הדף.
+       הפתרון: להסתיר לגמרי את הכפתור הצף כל עוד כרטיס התוצאות גלוי, כדי
+       שלא תהיה שום התנגשות יעד-הקשה בדיוק באזור הקריטי הזה. */
+    function setBackToTopSuppressed(suppressed) {
+      const topBtn = document.getElementById('back-to-top-btn');
+      if (!topBtn) return;
+      topBtn.dataset.suppressed = suppressed ? '1' : '0';
+      if (suppressed) {
+        topBtn.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+        topBtn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+      } else if (window.scrollY > 300) {
+        topBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+        topBtn.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+      }
+    }
+
     function finishSessionCalculations() {
       sessionActive = false;
       const resCard = document.getElementById('session-results-card');
@@ -1158,6 +1191,13 @@
         resCard.classList.remove('hidden');
         resCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
+      setBackToTopSuppressed(true);
+
+      // "לצעד הבא (6/6)" לא ברור כשהסשן כבר הסתיים — עושים את כפתור ההתחלה
+      // (למעלה) ברור גם הוא כהזמנה מפורשת לסשן נוסף, לצד כפתור "נסו שוב"
+      // הייעודי שבכרטיס התוצאות עצמו.
+      const startBtn = document.getElementById('start-trial-btn');
+      if (startBtn) startBtn.textContent = '🔄 התחילו סשן נוסף';
     }
 
     function restartSession() {
@@ -1166,6 +1206,7 @@
       const resCard = document.getElementById('session-results-card');
       if (resCard) resCard.classList.add('hidden');
       document.getElementById('start-trial-btn').textContent = 'התחל סשן 6 צעדים ⚡';
+      setBackToTopSuppressed(false);
       startTrial();
     }
 
@@ -1387,6 +1428,7 @@
     window.addEventListener('scroll', () => {
       const topBtn = document.getElementById('back-to-top-btn');
       if (!topBtn) return;
+      if (topBtn.dataset.suppressed === '1') return; // ר' setBackToTopSuppressed()
 
       if (window.scrollY > 300) {
         topBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
@@ -1396,6 +1438,15 @@
         topBtn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
       }
     }, { passive: true });
+
+    // רישום ה-Service Worker — אחרי ביקור ראשון מוצלח, העמוד והתמונות
+    // נשמרים במטמון המכשיר ונטענים מיידית גם ברשת סלולרית חלשה/ללא רשת.
+    // same-origin בלבד, לא שובר את עקרון אפס-בקשות-חיצוניות.
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch(() => {});
+      });
+    }
   </script>
 </body>
 </html>

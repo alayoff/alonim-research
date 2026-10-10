@@ -8,6 +8,7 @@ src
 build.mjs
 qr.js
 test.mjs
+test-offline.mjs
 package.json
 package-lock.json
 tailwind.config.js

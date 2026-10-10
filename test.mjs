@@ -64,6 +64,37 @@ ok(!res.cardHidden, 'כרטיס התוצאות נפתח');
 const swN = parseInt(res.sw), rpN = parseInt(res.rp), dfN = parseInt(res.diff.replace('+',''));
 ok(dfN === swN - rpN, `SC = Switch − Repeat (${swN} − ${rpN} = ${dfN})`);
 
+// --- Regression: "נסו שוב" + אפשרות להריץ סשן נוסף בלי רענון דף ---
+// (באג שדווח: המשתמש חייב לרענן את הדף כדי לנסות שוב. הסיבה האמיתית: הכפתור
+// הצף "חזרה למעלה" חפף/נצמד לכפתור "נסו שוב" ותפס הקשות מיועדות אליו.)
+await page.waitForTimeout(400); // הכרטיס כבר גלל אליו לבד (finishSessionCalculations)
+ok(await page.evaluate(() => document.getElementById('back-to-top-btn').dataset.suppressed === '1'),
+   'הכפתור הצף "חזרה למעלה" מוסתר כל עוד כרטיס התוצאות גלוי (מונע הקשה שגויה במקום "נסו שוב")');
+
+const retryLocator = page.locator('button[onclick="restartSession()"]');
+await retryLocator.scrollIntoViewIfNeeded();
+const retryBox = await retryLocator.boundingBox();
+// הקשה ממש בפינה שבה הכפתור הצף היה בעבר חופף לכפתור "נסו שוב"
+await page.mouse.click(retryBox.x + 12, retryBox.y + retryBox.height - 6);
+await page.waitForTimeout(250);
+const afterRetryTap = await page.evaluate(() => ({ sessionStepIndex, cardHidden: document.getElementById('session-results-card').classList.contains('hidden') }));
+ok(afterRetryTap.sessionStepIndex === 0 && afterRetryTap.cardHidden,
+   'הקשה על "נסו שוב" (כולל בפינה הקריטית) מפעילה סשן חדש בפועל, בלי רענון דף');
+
+const rts2 = [];
+for (let i = 0; i < 6; i++) {
+  await page.waitForFunction(() => document.getElementById('feedback-msg').textContent.includes('הגיבו עכשיו'), null, { timeout: 5000 });
+  const key = await page.evaluate(i => sessionSequence[i].key, i);
+  await page.waitForTimeout(90 + i * 40);
+  await page.keyboard.press(key === 'J' ? 'j' : 'f');
+  await page.waitForTimeout(700);
+}
+const res2 = await page.evaluate(() => ({
+  resultsLen: sessionResults.length,
+  cardHidden: document.getElementById('session-results-card').classList.contains('hidden'),
+}));
+ok(res2.resultsLen === 6 && !res2.cardHidden, `סשן שני, בתוך אותו טעינת-עמוד, מסתיים תקין (${res2.resultsLen}/6 צעדים)`);
+
 // --- semester slider (סמסטר א' ➔ ב') ---
 await page.evaluate(() => document.getElementById('gorilla-journey-slider').scrollIntoView());
 await page.waitForTimeout(1300);
@@ -126,8 +157,12 @@ ok(await page.evaluate(() => { const d = document.getElementById('nav-drawer').g
     return Math.abs(d.right - window.innerWidth) < 4; }), 'המגירה עוגנת לצד ימין (RTL)');
 await page.keyboard.press('Escape'); await page.waitForTimeout(400);
 
+// יוצאים ממצב סשן (סוגר את כרטיס התוצאות) לפני בדיקת הכפתור הצף הרגילה —
+// כל עוד כרטיס התוצאות גלוי, הכפתור הצף מוסתר בכוונה (ר' הבדיקה למעלה).
+await page.click('#mode-flanker-btn'); await page.waitForTimeout(200);
+
 await page.evaluate(() => window.scrollTo(0, 1200)); await page.waitForTimeout(400);
-ok(await page.evaluate(() => document.getElementById('back-to-top-btn').classList.contains('opacity-100')), 'כפתור Back-to-Top מופיע בגלילה');
+ok(await page.evaluate(() => document.getElementById('back-to-top-btn').classList.contains('opacity-100')), 'כפתור Back-to-Top מופיע בגלילה (כשאין כרטיס תוצאות פתוח)');
 await page.evaluate(() => window.scrollTo(0, 0)); await page.waitForTimeout(400);
 
 await page.click('button[onclick="openQrModal()"]'); await page.waitForTimeout(400);

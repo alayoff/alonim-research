@@ -1,0 +1,19 @@
+{
+  "name": "מעבדת קוגניציה ואינהיביציה — תוכנית אלונים",
+  "short_name": "אלונים מחקר",
+  "description": "הקשר בין אינהיביציה לשטף מתמטי — פרויקט מחקר בתוכנית המצוינות אלונים, המרכז האקדמי רופין.",
+  "start_url": "./index.html",
+  "id": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f0fdf4",
+  "theme_color": "#0d9488",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

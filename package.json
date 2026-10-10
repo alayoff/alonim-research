@@ -5,7 +5,9 @@
   "scripts": {
     "build": "node build.mjs",
     "watch": "npx tailwindcss -c tailwind.config.js -i src.css -o .tw.out.css --watch",
-    "test": "node test.mjs"
+    "test": "node test.mjs",
+    "test:offline": "node test-offline.mjs",
+    "test:all": "node test.mjs && node test-offline.mjs"
   },
   "devDependencies": {
     "playwright": "^1.49.1",

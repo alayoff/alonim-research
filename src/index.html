@@ -557,36 +557,36 @@
 
         <!-- Mode Selector -->
         <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-4">
-          <button type="button" id="mode-flanker-btn" onclick="setLabMode('flanker')" class="px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-teal-600 text-white shadow-md transition touch-pad">
+          <button type="button" id="mode-flanker-btn" onclick="setLabMode('flanker')" class="px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad">
             🏹 פלנקר (אינהיביציה)
           </button>
           <button type="button" id="mode-math-btn" onclick="setLabMode('math')" class="px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition touch-pad">
             🔢 אימות חשבון (בודד)
           </button>
-          <button type="button" id="mode-session-btn" onclick="setLabMode('session')" class="px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-100 text-purple-800 border-2 border-purple-300 hover:bg-purple-200 transition touch-pad flex items-center gap-1.5 shadow-sm">
+          <button type="button" id="mode-session-btn" onclick="setLabMode('session')" class="px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-purple-600 text-white shadow-md transition touch-pad flex items-center gap-1.5">
             <span>⚡</span>
             <span>סשן 6 צעדים (4 פלנקר ➔ 2 חשבון)</span>
           </button>
         </div>
 
         <!-- 6-Step Progress Bar -->
-        <div id="session-progress-bar" class="hidden mb-4 p-3 bg-purple-50/90 rounded-2xl border border-purple-200 text-right space-y-2">
+        <div id="session-progress-bar" class="mb-4 p-3 bg-purple-50/90 rounded-2xl border border-purple-200 text-right space-y-2">
           <div class="flex items-center justify-between text-xs font-bold">
             <span id="session-step-counter" class="text-purple-900 font-extrabold">צעד 1 מתוך 6</span>
             <span id="session-step-type" class="text-purple-700 bg-white px-2.5 py-0.5 rounded-full border border-purple-200">פלנקר (צעד 1 מתוך 4)</span>
           </div>
           <div class="w-full h-2.5 bg-purple-200 rounded-full overflow-hidden">
-            <div id="session-progress-fill" class="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300" style="width: 16%;"></div>
+            <div id="session-progress-fill" class="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300" style="width: 17%;"></div>
           </div>
         </div>
 
         <!-- Stimulus Display Box -->
         <div id="stimulus-container" class="py-6 sm:py-8 px-4 my-auto bg-slate-50/70 rounded-2xl border border-slate-200/60">
           <div id="instruction-hint" class="text-xs sm:text-sm text-slate-500 font-semibold mb-3">
-            הגיבו לחץ המרכזי בלבד (התעלמו מהסובבים)
+            סשן ניסוי 3: 4 צעדי פלנקר ולאחר מכן 2 תרגילי חשבון!
           </div>
-          
-          <div id="stimulus-text" dir="ltr" style="direction: ltr !important; unicode-bidi: isolate;" class="stimulus-fluid font-black font-mono text-slate-900 min-h-[70px] flex items-center justify-center transition-all">→ ← → → ←</div>
+
+          <div id="stimulus-text" dir="ltr" style="direction: ltr !important; unicode-bidi: isolate;" class="stimulus-fluid font-black font-mono text-slate-900 min-h-[70px] flex items-center justify-center transition-all">מוכנים לסשן המשולב?</div>
 
           <div id="feedback-msg" role="status" aria-live="polite" class="h-6 mt-3 text-xs sm:text-sm font-extrabold text-teal-700 animate-pulse">לחצו על 'התחל צעד' כדי להתחיל</div>
         </div>
@@ -601,7 +601,7 @@
                 <span class="text-2xl sm:text-3xl font-black font-mono text-slate-800">F</span>
                 <span class="text-xs text-slate-400 font-bold">/ כ</span>
               </div>
-              <span id="label-key-f" dir="rtl" class="text-xs sm:text-sm font-extrabold text-rose-600 mt-1">חץ שמאלה</span>
+              <span id="label-key-f" dir="rtl" class="text-xs sm:text-sm font-extrabold text-rose-600 mt-1">חץ שמאלה / שגוי</span>
               <span class="text-[10px] text-slate-600 mt-0.5 sm:hidden" dir="rtl">הקש כאן בנייד 📱</span>
             </button>
 
@@ -611,7 +611,7 @@
                 <span class="text-2xl sm:text-3xl font-black font-mono text-slate-800">J</span>
                 <span class="text-xs text-slate-400 font-bold">/ ח</span>
               </div>
-              <span id="label-key-j" dir="rtl" class="text-xs sm:text-sm font-extrabold text-teal-600 mt-1">חץ ימינה</span>
+              <span id="label-key-j" dir="rtl" class="text-xs sm:text-sm font-extrabold text-teal-600 mt-1">חץ ימינה / נכון</span>
               <span class="text-[10px] text-slate-600 mt-0.5 sm:hidden" dir="rtl">הקש כאן בנייד 📱</span>
             </button>
 
@@ -620,7 +620,7 @@
           <!-- Pacing Action Bar -->
           <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button type="button" id="start-trial-btn" onclick="startTrial()" class="touch-pad px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold text-sm shadow-md hover:shadow-lg active:scale-95 transition">
-              התחל צעד (Space / הקש)
+              התחל סשן 6 צעדים ⚡
             </button>
             <div id="live-rt" class="text-xs sm:text-sm font-mono font-bold text-slate-600 bg-slate-100 px-4 py-2.5 rounded-xl border border-slate-200">זמן תגובה: -- ms</div>
           </div>
@@ -633,20 +633,24 @@
               <span class="text-2xl">🏆</span>
               <h3 class="font-extrabold text-base sm:text-lg text-purple-950 font-display">תוצאות סשן ניסוי 3 (Interleaved)</h3>
             </div>
-            <span id="sc-user-score-badge" class="shrink-0 px-3 py-1 rounded-xl text-xs font-black bg-purple-600 text-white whitespace-nowrap" dir="ltr">SC: -- ms</span>
+            <span id="sc-user-score-badge" class="shrink-0 px-3 py-1 rounded-xl text-xs font-black bg-purple-600 text-white whitespace-nowrap" dir="ltr">עלות מעבר: -- ms</span>
           </div>
+
+          <p class="text-xs sm:text-sm text-purple-900/90 leading-relaxed">
+            בודקים כאן כמה זמן נוסף לוקח למוח "להחליף כיוון חשיבה" — לעבור ממשימה אחת (פלנקר) למשימה שונה (חשבון) — בהשוואה להמשך באותה משימה.
+          </p>
 
           <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center">
             <div class="p-2.5 bg-white rounded-xl border border-purple-100 shadow-sm">
-              <span class="block text-[10px] font-extrabold text-slate-600 leading-tight">Switch<span class="block text-[9px] font-medium text-slate-400">צעד 5</span></span>
+              <span class="block text-[10px] font-extrabold text-slate-600 leading-tight">מעבר (Switch)<span class="block text-[9px] font-medium text-slate-400">אחרי שינוי משימה</span></span>
               <span id="sc-switch-rt" class="block text-sm sm:text-lg font-black font-mono text-pink-700 whitespace-nowrap" dir="ltr">-- ms</span>
             </div>
             <div class="p-2.5 bg-white rounded-xl border border-purple-100 shadow-sm">
-              <span class="block text-[10px] font-extrabold text-slate-600 leading-tight">Repeat<span class="block text-[9px] font-medium text-slate-400">צעד 6</span></span>
+              <span class="block text-[10px] font-extrabold text-slate-600 leading-tight">חזרה (Repeat)<span class="block text-[9px] font-medium text-slate-400">באותה משימה</span></span>
               <span id="sc-repeat-rt" class="block text-sm sm:text-lg font-black font-mono text-teal-700 whitespace-nowrap" dir="ltr">-- ms</span>
             </div>
             <div class="p-2.5 bg-purple-100/70 rounded-xl border border-purple-200 shadow-sm">
-              <span class="block text-[10px] font-extrabold text-purple-900 leading-tight">עלות מעבר<span class="block text-[9px] font-medium text-purple-500">SC</span></span>
+              <span class="block text-[10px] font-extrabold text-purple-900 leading-tight">עלות מעבר<span class="block text-[9px] font-medium text-purple-500">Switch Cost</span></span>
               <span id="sc-diff-rt" class="block text-sm sm:text-lg font-black font-mono text-purple-900 whitespace-nowrap" dir="ltr">-- ms</span>
             </div>
           </div>
@@ -1051,6 +1055,12 @@
       document.getElementById('feedback-msg').className = 'h-6 mt-3 text-xs sm:text-sm font-bold text-slate-600';
     }
 
+    // ברירת המחדל בטעינת העמוד: סשן 6 הצעדים (הניסוי המשולב עצמו), ולא
+    // תרגול פלנקר בודד — זה מה שרוב המבקרים אמורים לנסות קודם. קוראים
+    // ל-setLabMode() במקום לשכפל את אותו מצב-התחלה גם בסטטי וגם ב-JS (בדיוק
+    // סוג האי-התאמה שתוקן ב-QA קודם): מקור אמת יחיד לכל הטקסטים/העיצוב.
+    setLabMode('session');
+
     function updateSessionProgressBar() {
       const stepCounter = document.getElementById('session-step-counter');
       const stepType = document.getElementById('session-step-type');
@@ -1233,19 +1243,22 @@
       if (switchEl) switchEl.textContent = switchRt !== null ? `${switchRt} ms` : '-- ms';
       if (repeatEl) repeatEl.textContent = repeatRt !== null ? `${repeatRt} ms` : '-- ms';
       if (diffEl) diffEl.textContent = switchCost !== null ? signed(switchCost) : '-- ms';
-      if (badgeEl) badgeEl.textContent = switchCost !== null ? `SC: ${signed(switchCost)}` : 'SC: -- ms';
+      if (badgeEl) badgeEl.textContent = switchCost !== null ? `עלות מעבר: ${signed(switchCost)}` : 'עלות מעבר: -- ms';
 
       if (insightEl) {
+        // "ms" (אלפיות שנייה) הוא יחידת הזמן שבה נמדדת תגובה — מי שלא מגיע
+        // מרקע מדעי לא בהכרח יודע את זה, אז מזכירים את זה פעם אחת במפורש
+        // במקום להניח שזה מובן מאליו מהסימן "ms" לבדו.
         const flankerNote = avgFlanker !== null
-          ? `ממוצע 4 צעדי הפלנקר שלכם היה <span class="font-bold font-mono">${avgFlanker} ms</span>.`
-          : `לא נרשמו צעדי פלנקר מדויקים בסשן הזה.`;
+          ? `לשם השוואה: ב-4 תרגילי הפלנקר שלכם (זיהוי כיוון חץ) לקח לכם בממוצע <span class="font-bold font-mono">${avgFlanker} אלפיות שנייה (ms)</span> להגיב.`
+          : `לא נרשמו תרגילי פלנקר מדויקים בסשן הזה להשוואה.`;
 
         if (!bothValid) {
-          insightEl.innerHTML = `<strong>שימו לב:</strong> אחד משני תרגילי החשבון נענה בטעות, ולכן עלות המעבר שחושבה כאן אינה תקפה — בניסוי האמיתי צעדים שגויים מסוננים מהניתוח. ${flankerNote} נסו שוב לסשן נקי!`;
+          insightEl.innerHTML = `⚠️ <strong>אחד משני תרגילי החשבון נענה בטעות</strong>, ולכן אי אפשר לחשב כאן תוצאה אמינה — ממש כמו במחקר האמיתי, שבו תשובות שגויות כאלה פשוט לא נכללות בניתוח. ${flankerNote} לחצו "נסו שוב" כדי לקבל סשן נקי.`;
         } else if (switchCost > 0) {
-          insightEl.innerHTML = `<strong>עלות מעבר חיובית: ${signed(switchCost)}.</strong> תרגיל החשבון הראשון — זה שהגיע מיד אחרי 4 צעדי הפלנקר — לקח לכם <span class="font-bold text-purple-900 font-mono">${switchRt} ms</span>, לעומת <span class="font-bold font-mono">${repeatRt} ms</span> לתרגיל השני שכבר לא דרש מעבר בין מטלות. ההפרש הזה הוא בדיוק ה-Switch Cost שניסוי 3 מודד. ${flankerNote}`;
+          insightEl.innerHTML = `✅ <strong>ככה זה עבד אצלכם:</strong> אחרי 4 תרגילי פלנקר ברצף, כשפתאום הגיע תרגיל חשבון — כלומר נדרשתם "לעבור" לסוג חשיבה אחר — לקח לכם <span class="font-bold text-purple-900 font-mono">${switchRt} ms</span> להגיב. בתרגיל החשבון שאחריו, שכבר לא דרש שום מעבר, לקח לכם רק <span class="font-bold font-mono">${repeatRt} ms</span>. ההפרש ביניהם, <strong>${signed(switchCost)}</strong>, הוא בדיוק מה שנקרא "עלות מעבר" (Switch Cost): הזמן הנוסף שהמוח צריך כדי לעבור בין סוגי חשיבה שונים. ${flankerNote}`;
         } else {
-          insightEl.innerHTML = `<strong>עלות מעבר: ${signed(switchCost)}.</strong> הפעם תרגיל המעבר (<span class="font-mono">${switchRt} ms</span>) לא היה איטי מתרגיל החזרה (<span class="font-mono">${repeatRt} ms</span>). בצעד בודד זה קורה לא מעט — בדיוק בגלל זה הניסוי האמיתי מודד עשרות צעדים וממצע אותם. ${flankerNote}`;
+          insightEl.innerHTML = `🔄 <strong>הפעם קרה דבר מעניין:</strong> המעבר בין המשימות (<span class="font-mono">${switchRt} ms</span>) לא יצא איטי יותר מהחזרה על אותה משימה (<span class="font-mono">${repeatRt} ms</span>). זה קורה לא מעט כשבודקים רק צעד בודד — בדיוק בגלל זה במחקר האמיתי בודקים עשרות חזרות על זה ולא מסתמכים על תרגיל אחד. ${flankerNote}`;
         }
       }
 

@@ -18,6 +18,18 @@ await page.waitForTimeout(600);
 ok(external.length === 0, `אפס בקשות רשת חיצוניות (נמצאו ${external.length}${external.length ? ': ' + external.join(', ') : ''})`);
 ok(errors.length === 0, `אין שגיאות JS (${errors.join(' | ') || 'נקי'})`);
 
+// --- Regression: ברירת המחדל בטעינת העמוד היא סשן 6 הצעדים, לא פלנקר בודד ---
+// (המבקש המפורש: רוב המבקרים אמורים לנסות קודם את הניסוי המשולב עצמו.)
+const defaultModeState = await page.evaluate(() => ({
+  currentMode,
+  sessionBtnActive: document.getElementById('mode-session-btn').className.includes('bg-purple-600'),
+  progressBarHidden: document.getElementById('session-progress-bar').classList.contains('hidden'),
+  startBtnText: document.getElementById('start-trial-btn').textContent.trim(),
+}));
+ok(defaultModeState.currentMode === 'session' && defaultModeState.sessionBtnActive && !defaultModeState.progressBarHidden,
+   `ברירת המחדל בטעינה היא סשן 6 הצעדים (currentMode=${defaultModeState.currentMode})`);
+ok(defaultModeState.startBtnText.includes('6 צעדים'), `כפתור ההפעלה הדיפולטי מזמין לסשן (${defaultModeState.startBtnText})`);
+
 // --- answer-key integrity: every stimulus vs its key ---
 const keyAudit = await page.evaluate(() => {
   const centerOf = t => t.split(' ').filter(Boolean)[2];
@@ -63,6 +75,18 @@ ok(res.results.length === 6 && res.results.every(r => r.correct),
 ok(!res.cardHidden, 'כרטיס התוצאות נפתח');
 const swN = parseInt(res.sw), rpN = parseInt(res.rp), dfN = parseInt(res.diff.replace('+',''));
 ok(dfN === swN - rpN, `SC = Switch − Repeat (${swN} − ${rpN} = ${dfN})`);
+
+// --- Regression: הסבר התוצאות מנוסח בשפה מובנת למי שלא מגיע מרקע מדעי ---
+// (באג UX שדווח: התוצאות היו מוצגות עם ראשי-תיבות/מונחים טכניים בלי הסבר —
+// "SC:"/"Switch"/"Repeat" כתווית ראשית, בלי מילה אחת על מה זה אומר בפועל.)
+const plainLangCheck = await page.evaluate(() => ({
+  badgeText: document.getElementById('sc-user-score-badge').textContent,
+  insightText: document.getElementById('sc-insight-text').textContent,
+}));
+ok(plainLangCheck.badgeText.includes('עלות מעבר') && !plainLangCheck.badgeText.trim().startsWith('SC'),
+   `התגית העליונה כתובה בעברית ("עלות מעבר"), לא רק ראשי-תיבות (${plainLangCheck.badgeText})`);
+ok(plainLangCheck.insightText.includes('אלפיות שנייה') && plainLangCheck.insightText.length > 120,
+   'הסבר התוצאות כולל ניסוח מילולי מובן (לא רק מספרים/מונחים), כולל הסבר ליחידת המדידה (ms)');
 
 // --- Regression: "נסו שוב" + אפשרות להריץ סשן נוסף בלי רענון דף ---
 // (באג שדווח: המשתמש חייב לרענן את הדף כדי לנסות שוב. הסיבה האמיתית: הכפתור

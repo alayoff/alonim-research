@@ -633,31 +633,37 @@
               <span class="text-2xl">🏆</span>
               <h3 class="font-extrabold text-base sm:text-lg text-purple-950 font-display">תוצאות סשן ניסוי 3 (Interleaved)</h3>
             </div>
-            <span id="sc-user-score-badge" class="shrink-0 px-3 py-1 rounded-xl text-xs font-black bg-purple-600 text-white whitespace-nowrap" dir="ltr">עלות מעבר: -- ms</span>
+            <span id="sc-user-score-badge" class="shrink-0 px-3 py-1 rounded-xl text-xs font-black bg-purple-600 text-white whitespace-nowrap">📊 תוצאה</span>
           </div>
 
           <p class="text-xs sm:text-sm text-purple-900/90 leading-relaxed">
             בודקים כאן כמה זמן נוסף לוקח למוח "להחליף כיוון חשיבה" — לעבור ממשימה אחת (פלנקר) למשימה שונה (חשבון) — בהשוואה להמשך באותה משימה.
           </p>
 
-          <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center">
-            <div class="p-2.5 bg-white rounded-xl border border-purple-100 shadow-sm">
-              <span class="block text-[10px] font-extrabold text-slate-600 leading-tight">מעבר (Switch)<span class="block text-[9px] font-medium text-slate-400">אחרי שינוי משימה</span></span>
-              <span id="sc-switch-rt" class="block text-sm sm:text-lg font-black font-mono text-pink-700 whitespace-nowrap" dir="ltr">-- ms</span>
-            </div>
-            <div class="p-2.5 bg-white rounded-xl border border-purple-100 shadow-sm">
-              <span class="block text-[10px] font-extrabold text-slate-600 leading-tight">חזרה (Repeat)<span class="block text-[9px] font-medium text-slate-400">באותה משימה</span></span>
-              <span id="sc-repeat-rt" class="block text-sm sm:text-lg font-black font-mono text-teal-700 whitespace-nowrap" dir="ltr">-- ms</span>
-            </div>
-            <div class="p-2.5 bg-purple-100/70 rounded-xl border border-purple-200 shadow-sm">
-              <span class="block text-[10px] font-extrabold text-purple-900 leading-tight">עלות מעבר<span class="block text-[9px] font-medium text-purple-500">Switch Cost</span></span>
-              <span id="sc-diff-rt" class="block text-sm sm:text-lg font-black font-mono text-purple-900 whitespace-nowrap" dir="ltr">-- ms</span>
-            </div>
-          </div>
-
-          <p id="sc-insight-text" class="text-xs sm:text-sm text-purple-950/80 leading-relaxed font-medium bg-white/80 p-3 rounded-xl border border-purple-100">
-            הסבר התוצאות יחושב כאן...
+          <p id="sc-insight-text" class="text-sm sm:text-base text-purple-950 leading-relaxed font-semibold bg-white/80 p-3.5 rounded-xl border border-purple-100">
+            מחשבים את התוצאה שלכם...
           </p>
+
+          <details class="group bg-white/60 rounded-xl border border-purple-100">
+            <summary class="cursor-pointer select-none p-3 text-xs sm:text-sm font-bold text-purple-800 flex items-center justify-between touch-pad">
+              <span>🔎 רוצים לראות את הנתונים המדויקים (באלפיות שנייה)?</span>
+              <span class="text-purple-400 transition-transform group-open:rotate-180">⌄</span>
+            </summary>
+            <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center p-3 pt-0">
+              <div class="p-2.5 bg-white rounded-xl border border-purple-100 shadow-sm">
+                <span class="block text-[10px] font-extrabold text-slate-600 leading-tight">מעבר (Switch)<span class="block text-[9px] font-medium text-slate-400">אחרי שינוי משימה</span></span>
+                <span id="sc-switch-rt" class="block text-sm sm:text-lg font-black font-mono text-pink-700 whitespace-nowrap" dir="ltr">-- ms</span>
+              </div>
+              <div class="p-2.5 bg-white rounded-xl border border-purple-100 shadow-sm">
+                <span class="block text-[10px] font-extrabold text-slate-600 leading-tight">חזרה (Repeat)<span class="block text-[9px] font-medium text-slate-400">באותה משימה</span></span>
+                <span id="sc-repeat-rt" class="block text-sm sm:text-lg font-black font-mono text-teal-700 whitespace-nowrap" dir="ltr">-- ms</span>
+              </div>
+              <div class="p-2.5 bg-purple-100/70 rounded-xl border border-purple-200 shadow-sm">
+                <span class="block text-[10px] font-extrabold text-purple-900 leading-tight">עלות מעבר<span class="block text-[9px] font-medium text-purple-500">Switch Cost</span></span>
+                <span id="sc-diff-rt" class="block text-sm sm:text-lg font-black font-mono text-purple-900 whitespace-nowrap" dir="ltr">-- ms</span>
+              </div>
+            </div>
+          </details>
 
           <div class="flex justify-center pt-1">
             <button type="button" onclick="restartSession()" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs sm:text-sm shadow-md transition touch-pad">
@@ -1229,11 +1235,6 @@
       const switchTrial = sessionResults.find(r => r.type === 'math_switch');
       const repeatTrial = sessionResults.find(r => r.type === 'math_repeat');
 
-      const flankers = sessionResults.filter(r => r.type === 'flanker' && r.correct);
-      const avgFlanker = flankers.length > 0
-        ? Math.round(flankers.reduce((a, b) => a + b.rt, 0) / flankers.length)
-        : null;
-
       const switchRt = switchTrial ? switchTrial.rt : null;
       const repeatRt = repeatTrial ? repeatTrial.rt : null;
       const bothValid = !!(switchTrial && repeatTrial && switchTrial.correct && repeatTrial.correct);
@@ -1243,23 +1244,20 @@
       if (switchEl) switchEl.textContent = switchRt !== null ? `${switchRt} ms` : '-- ms';
       if (repeatEl) repeatEl.textContent = repeatRt !== null ? `${repeatRt} ms` : '-- ms';
       if (diffEl) diffEl.textContent = switchCost !== null ? signed(switchCost) : '-- ms';
-      if (badgeEl) badgeEl.textContent = switchCost !== null ? `עלות מעבר: ${signed(switchCost)}` : 'עלות מעבר: -- ms';
 
-      if (insightEl) {
-        // "ms" (אלפיות שנייה) הוא יחידת הזמן שבה נמדדת תגובה — מי שלא מגיע
-        // מרקע מדעי לא בהכרח יודע את זה, אז מזכירים את זה פעם אחת במפורש
-        // במקום להניח שזה מובן מאליו מהסימן "ms" לבדו.
-        const flankerNote = avgFlanker !== null
-          ? `לשם השוואה: ב-4 תרגילי הפלנקר שלכם (זיהוי כיוון חץ) לקח לכם בממוצע <span class="font-bold font-mono">${avgFlanker} אלפיות שנייה (ms)</span> להגיב.`
-          : `לא נרשמו תרגילי פלנקר מדויקים בסשן הזה להשוואה.`;
-
-        if (!bothValid) {
-          insightEl.innerHTML = `⚠️ <strong>אחד משני תרגילי החשבון נענה בטעות</strong>, ולכן אי אפשר לחשב כאן תוצאה אמינה — ממש כמו במחקר האמיתי, שבו תשובות שגויות כאלה פשוט לא נכללות בניתוח. ${flankerNote} לחצו "נסו שוב" כדי לקבל סשן נקי.`;
-        } else if (switchCost > 0) {
-          insightEl.innerHTML = `✅ <strong>ככה זה עבד אצלכם:</strong> אחרי 4 תרגילי פלנקר ברצף, כשפתאום הגיע תרגיל חשבון — כלומר נדרשתם "לעבור" לסוג חשיבה אחר — לקח לכם <span class="font-bold text-purple-900 font-mono">${switchRt} ms</span> להגיב. בתרגיל החשבון שאחריו, שכבר לא דרש שום מעבר, לקח לכם רק <span class="font-bold font-mono">${repeatRt} ms</span>. ההפרש ביניהם, <strong>${signed(switchCost)}</strong>, הוא בדיוק מה שנקרא "עלות מעבר" (Switch Cost): הזמן הנוסף שהמוח צריך כדי לעבור בין סוגי חשיבה שונים. ${flankerNote}`;
-        } else {
-          insightEl.innerHTML = `🔄 <strong>הפעם קרה דבר מעניין:</strong> המעבר בין המשימות (<span class="font-mono">${switchRt} ms</span>) לא יצא איטי יותר מהחזרה על אותה משימה (<span class="font-mono">${repeatRt} ms</span>). זה קורה לא מעט כשבודקים רק צעד בודד — בדיוק בגלל זה במחקר האמיתי בודקים עשרות חזרות על זה ולא מסתמכים על תרגיל אחד. ${flankerNote}`;
-        }
+      // התגית למעלה והפסקה המרכזית בכוונה לא מציגות מספרים: המטרה היא
+      // שמי שלא מגיע מרקע מחקרי יבין מיד "מה קרה" בלי לפענח אלפיות שנייה
+      // והפרשים. המספרים המדויקים עדיין קיימים, אבל בתוך <details> מתחת —
+      // מי שבאמת רוצה לראות אותם פותח את זה בעצמו, הם לא נכפים על כולם.
+      if (!bothValid) {
+        if (badgeEl) badgeEl.textContent = '⚠️ לא תקף הפעם';
+        if (insightEl) insightEl.innerHTML = `אחד משני תרגילי החשבון נענה הפעם בטעות, אז אי אפשר להסיק מזה כלום — בדיוק כמו במחקר עצמו, שבו תשובות שגויות פשוט לא נכללות בניתוח. לחצו על "נסו שוב" כדי לקבל סשן נקי.`;
+      } else if (switchCost > 0) {
+        if (badgeEl) badgeEl.textContent = '🧠 בדיוק כמו שציפינו';
+        if (insightEl) insightEl.innerHTML = `ברגע שהיית צריך "לעבור הילוך" — מהתעלמות מחיצים לפתרון תרגיל חשבון — לקח לך קצת יותר זמן להגיב, לעומת תרגיל חשבון שהגיע מיד אחרי תרגיל חשבון אחר, בלי שום מעבר. זה בדיוק מה שאנחנו בוחנים: המחיר הקטן שהמוח משלם בכל פעם שהוא עובר בין סוגי חשיבה שונים.`;
+      } else {
+        if (badgeEl) badgeEl.textContent = '🔀 הפעם היה שונה';
+        if (insightEl) insightEl.innerHTML = `הפעם זה לא יצא ככה אצלכם — וזה גם תקין! בצעד בודד התוצאה יכולה להשתנות בקלות לכל כיוון. בדיוק בגלל זה במחקר האמיתי בודקים הרבה פעמים וממצעים את התוצאה, במקום להסתמך על ניסיון אחד.`;
       }
 
       if (resCard) {

@@ -76,17 +76,30 @@ ok(!res.cardHidden, 'כרטיס התוצאות נפתח');
 const swN = parseInt(res.sw), rpN = parseInt(res.rp), dfN = parseInt(res.diff.replace('+',''));
 ok(dfN === swN - rpN, `SC = Switch − Repeat (${swN} − ${rpN} = ${dfN})`);
 
-// --- Regression: הסבר התוצאות מנוסח בשפה מובנת למי שלא מגיע מרקע מדעי ---
-// (באג UX שדווח: התוצאות היו מוצגות עם ראשי-תיבות/מונחים טכניים בלי הסבר —
-// "SC:"/"Switch"/"Repeat" כתווית ראשית, בלי מילה אחת על מה זה אומר בפועל.)
-const plainLangCheck = await page.evaluate(() => ({
-  badgeText: document.getElementById('sc-user-score-badge').textContent,
-  insightText: document.getElementById('sc-insight-text').textContent,
-}));
-ok(plainLangCheck.badgeText.includes('עלות מעבר') && !plainLangCheck.badgeText.trim().startsWith('SC'),
-   `התגית העליונה כתובה בעברית ("עלות מעבר"), לא רק ראשי-תיבות (${plainLangCheck.badgeText})`);
-ok(plainLangCheck.insightText.includes('אלפיות שנייה') && plainLangCheck.insightText.length > 120,
-   'הסבר התוצאות כולל ניסוח מילולי מובן (לא רק מספרים/מונחים), כולל הסבר ליחידת המדידה (ms)');
+// --- Regression: הסבר התוצאות מנוסח בשפה מובנת לקהל הרחב, בלי מספרים/מונחים ---
+// (משוב מפורש מהמשתמש: גרסה קודמת עדיין כללה מספרי ms ואת המונח "Switch Cost"
+// בתוך הטקסט הראשי. הפתרון: התגית והפסקה המרכזית נטולות ספרות/מונחים לגמרי,
+// והמספרים המדויקים זמינים רק בתוך <details> מתקפל שנסגר כברירת מחדל.)
+const plainLangCheck = await page.evaluate(() => {
+  const details = document.querySelector('#session-results-card details');
+  return {
+    badgeText: document.getElementById('sc-user-score-badge').textContent,
+    insightText: document.getElementById('sc-insight-text').textContent,
+    detailsExists: !!details,
+    detailsCollapsed: !!details && !details.open,
+    detailsSwitch: document.getElementById('sc-switch-rt').textContent,
+    detailsRepeat: document.getElementById('sc-repeat-rt').textContent,
+    detailsDiff: document.getElementById('sc-diff-rt').textContent,
+  };
+});
+ok(!/\d/.test(plainLangCheck.badgeText) && plainLangCheck.badgeText.trim().length > 0,
+   `התגית העליונה איכותנית/אמוג'י, בלי שום ספרה (${plainLangCheck.badgeText})`);
+ok(!/\d/.test(plainLangCheck.insightText) && plainLangCheck.insightText.length > 80,
+   `הסבר התוצאות המרכזי מנוסח במילים בלבד, בלי מספרים/יחידות-זמן (${plainLangCheck.insightText.length} תווים)`);
+ok(plainLangCheck.detailsExists && plainLangCheck.detailsCollapsed,
+   'אזור "נתונים מדויקים" קיים כ-<details> מתקפל, סגור כברירת מחדל');
+ok(/\d/.test(plainLangCheck.detailsSwitch) && /\d/.test(plainLangCheck.detailsRepeat) && /\d/.test(plainLangCheck.detailsDiff),
+   `המספרים המדויקים עדיין קיימים בפועל בתוך ה-<details> (גם כשהוא סגור): ${plainLangCheck.detailsSwitch} / ${plainLangCheck.detailsRepeat} / ${plainLangCheck.detailsDiff}`);
 
 // --- Regression: "נסו שוב" + אפשרות להריץ סשן נוסף בלי רענון דף ---
 // (באג שדווח: המשתמש חייב לרענן את הדף כדי לנסות שוב. הסיבה האמיתית: הכפתור
